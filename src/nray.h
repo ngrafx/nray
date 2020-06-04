@@ -30,19 +30,47 @@
  */
 #pragma once
 
+// Global headers
+
 #include <iostream>
 #include <cmath>
+#include <algorithm>
+#include <memory>
 
-//#define NDEBUG or use the flag -DNDEBUG with g++
+/*
+You must #define NDEBUG (or use the flag -DNDEBUG with g++) this will disable
+assert as long as it's defined before the inclusion of the assert header file.
+*/
+//#define NDEBUG
 #include <assert.h>
 
 
+// Type definitions
 
 typedef float Float;
 
-#define MaxFloat std::numeric_limits<Float>::max()
-#define Infinity std::numeric_limits<Float>::infinity()
 
+// Global constants
+
+const Float MaxFloat = std::numeric_limits<Float>::max();
+const Float Infinity = std::numeric_limits<Float>::infinity();
+const Float Pi = 3.14159265358979323846;
+const Float InvPi = 0.31830988618379067154;
+
+
+// Using
+using std::shared_ptr;
+using std::make_shared;
+using std::min;
+using std::max;
+
+// Class Forward Declaration
+class Ray;
+struct Intersection;
+class Material;
+
+
+// Utility Functions
 
 template <typename T>
 bool IsNan(const T &v) {

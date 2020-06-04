@@ -32,6 +32,7 @@
 
 #include "nray.h"
 
+// Vector3 is the base class 
 
 template <typename T>
 struct Vector3 
@@ -141,10 +142,21 @@ struct Vector3
     }
 };
 
+template <typename T, typename U>
+Vector3<T> operator*(U s, T const &v) {
+    return Vector3<T>(v.x * s, v.y * s, v.z * s);
+}
+
+// Vector3 typedefs
+// TODO: They need to be child structs so we can override how they transform
+
 typedef Vector3<Float> Vec3;
 typedef Vector3<Float> Color;
 typedef Vector3<Float> Normal;
 typedef Vector3<Float> Point;
+
+
+// Vector3 utility functions
 
 template <typename T>
 inline std::ostream &operator<<(std::ostream &os, const Vector3<T> &v) {
@@ -187,4 +199,47 @@ template <typename T>
 inline Float DistanceSquared(const Vector3<T> &u, const Vector3<T> &v) {
     assert(!u.HasNan() && !v.HasNan());
     return (u - v).LengthSquared();
+}
+
+template <typename T>
+Vector3<T> Reflect(const Vector3<T>& v, const Vector3<T>& n) {
+    return v - n * 2*Dot(v,n);
+}
+
+template <typename T>
+Vector3<T> Refract(const Vector3<T>& uv, const Vector3<T>& n, Float etai_over_etat) {
+    auto cos_theta = min(Dot(-uv, n), 1.0);
+    Vector3<T> r_out_parallel =  etai_over_etat * (uv + cos_theta*n);
+    Vector3<T> r_out_perp = -sqrt(1.0 - r_out_parallel.LengthSquared()) * n;
+    return r_out_parallel + r_out_perp;
+}
+
+
+// Ray class
+
+class Ray 
+{
+public:
+    Ray() : _tMax(Infinity), _time(0.f) {}
+    Ray(const Point &o, const Vec3 &d) : _origin(o), _direction(d) {}
+
+    Point operator() (Float t) const { return _origin + _direction * t; }
+
+    Point Origin() const { return _origin;}
+    Vec3 Direction() const { return _direction;}
+    Float Time() const { return _time;}
+    Float TMax() const { return _tMax;}
+
+private:
+    Point _origin; // Ray origin
+    Vec3 _direction; // Ray Direction
+    Float _time; // Ray time
+    Float _tMax; // Ray max distance
+};
+
+// Ray utility Functions
+
+inline std::ostream &operator<<(std::ostream &os, const Ray &r) {
+    os << "[ origin=" << r.Origin() << ", direction=" << r.Direction() << ", time="<< r.Time() << ", tMax=" << r.TMax() << " ]";
+    return os;
 }

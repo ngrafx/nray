@@ -36,8 +36,19 @@
 int main() {
     Vec3 v(1.0, 1.2, 3.2);
     Vec3 v2(1.0, 1.2, 3.2);
-    Vec3 v3 = v * v2;
-    Vec3 v4 = Normalize(v);
+    Vec3 v3 = v * v2 * 2;
+    v3 *= 5;
+    v3 *= v2;
+    Vec3 v4 = v / v2 / 1.0;
+    v4 /= 3;
+    v4 /= v3;
+    Vec3 v5 = Normalize(v4);
+    bool eq = v == v2;
+    bool neq = v != v2;
+    Float d = Distance(v, v2);
+    d = DistanceSquared(v, v2);
+    Float dot = Dot(v, v2);
+    Vec3 v6 = Cross(v, v2);
     std::cout << "Hello World!" << "\n";
     std::cout << (Normalize(v) * 10).Length() << std::endl;
     std::cout << v*v/Normalize(v) << std::endl;
