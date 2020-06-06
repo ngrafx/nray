@@ -1,8 +1,18 @@
 # Nray
 
 Nray is a multithreaded physically based raytracer made for the Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213).
+It is inspired from Peter Shirley's awsome Raytracing series (https://raytracing.github.io/) and the great PBRT book (https://www.pbrt.org/) written by Matt Pharr, Wenzel Jakob and Greg Humphreys.
 
-## Dependencies for Running Locally
+## Building and Running Locally
+
+### Basic Build Instructions
+1. Make sure you have all the required dependencies
+2. Clone this repo.
+3. Make a build directory in the top level directory: `mkdir build && cd build`
+4. Compile: `cmake .. && make`
+5. Run it: `./nray`.
+
+### Dependencies for Running Locally
 * cmake >= 3.7
   * All OSes: [click here for installation instructions](https://cmake.org/install/)
 * make >= 4.1 (Linux, Mac), 3.81 (Windows)
@@ -14,9 +24,10 @@ Nray is a multithreaded physically based raytracer made for the Capstone project
   * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
   * Windows: recommend using [MinGW](http://www.mingw.org/)
 
-## Basic Build Instructions
+## Project Overview
 
-1. Clone this repo.
-2. Make a build directory in the top level directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./HelloWorld`.
+### Desciption and use
+
+### Files and Classes Structure
+
+## Rubric Points

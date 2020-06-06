@@ -34,7 +34,7 @@
 
 #include <iostream>
 #include <cmath>
-#include <algorithm>
+// #include <algorithm>
 #include <memory>
 
 /*
@@ -64,6 +64,7 @@ using std::make_shared;
 using std::min;
 using std::max;
 
+
 // Class Forward Declaration
 class Ray;
 struct Intersection;
@@ -75,4 +76,14 @@ class Material;
 template <typename T>
 bool IsNan(const T &v) {
     return std::isnan(v);
+}
+
+template <typename T, typename U>
+T Min(const T &t, const U &u) {
+  return (t<u) ? t : u;
+}
+
+template <typename T, typename U>
+T Max(const T &t, const U &u) {
+  return (t>u) ? t : u;
 }

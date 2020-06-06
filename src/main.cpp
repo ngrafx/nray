@@ -31,6 +31,11 @@
 #include "nray.h"
 
 #include "geometry.h"
+#include "rand.h"
+
+// Initialize Random Number Generator
+std::uniform_real_distribution<Float> Rng::distribution01 = std::uniform_real_distribution<Float>(0,1);
+std::mt19937 Rng::generator = std::mt19937(0);
 
 
 int main() {

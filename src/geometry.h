@@ -90,7 +90,7 @@ struct Vector3
 
     template <typename U>
     Vector3<T> operator*(U s) const {
-        return Vector3<T>(x * s, y * s, z * s);
+        return Vector3(x * s, y * s, z * s);
     }
 
     template <typename U>
@@ -112,7 +112,7 @@ struct Vector3
     template <typename U>
     Vector3<T> operator/(U s) const {
         Float k = (Float) 1 / s;
-        return Vector3<T>(x * k, y * k, z * k);
+        return Vector3(x * k, y * k, z * k);
     }
 
     template <typename U>
@@ -143,8 +143,8 @@ struct Vector3
 };
 
 template <typename T, typename U>
-Vector3<T> operator*(U s, T const &v) {
-    return Vector3<T>(v.x * s, v.y * s, v.z * s);
+inline Vector3<T> operator*(U s, const Vector3<T> &v) {
+    return v * s;
 }
 
 // Vector3 typedefs
@@ -208,7 +208,7 @@ Vector3<T> Reflect(const Vector3<T>& v, const Vector3<T>& n) {
 
 template <typename T>
 Vector3<T> Refract(const Vector3<T>& uv, const Vector3<T>& n, Float etai_over_etat) {
-    auto cos_theta = min(Dot(-uv, n), 1.0);
+    auto cos_theta = Min(Dot(-uv, n), 1.0);
     Vector3<T> r_out_parallel =  etai_over_etat * (uv + cos_theta*n);
     Vector3<T> r_out_perp = -sqrt(1.0 - r_out_parallel.LengthSquared()) * n;
     return r_out_parallel + r_out_perp;

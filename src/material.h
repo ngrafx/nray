@@ -26,7 +26,7 @@ class LambertianMaterial : public Material {
 
         virtual bool Scatter(
             const Ray& r_in, const Intersection& rec, Vec3& attenuation, Ray& scattered
-        ) const  {}
+        ) const;
 
     private:
         Color _albedo;
@@ -39,7 +39,7 @@ class DielectricMaterial : public Material {
 
         virtual bool Scatter(
             const Ray& r_in, const Intersection& rec, Color& attenuation, Ray& scattered
-        ) const {}
+        ) const;
 
     private:
         Float _ref_idx;
@@ -52,7 +52,7 @@ class MetalMaterial : public Material {
 
         virtual bool Scatter(
             const Ray& r_in, const Intersection& rec, Color& attenuation, Ray& scattered
-        ) const  {}
+        ) const;
 
     private:
         Color _albedo;
