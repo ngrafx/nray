@@ -30,6 +30,10 @@
  */
 #pragma once
 
+#ifndef NRAY_H
+#define NRAY_H
+
+
 // Global headers
 
 #include <iostream>
@@ -41,7 +45,7 @@
 You must #define NDEBUG (or use the flag -DNDEBUG with g++) this will disable
 assert as long as it's defined before the inclusion of the assert header file.
 */
-//#define NDEBUG
+#define NDEBUG
 #include <assert.h>
 
 
@@ -66,9 +70,9 @@ using std::max;
 
 
 // Class Forward Declaration
-class Ray;
+// class Ray;
 struct Intersection;
-class Material;
+// class Material;
 
 
 // Utility Functions
@@ -87,3 +91,23 @@ template <typename T, typename U>
 T Max(const T &t, const U &u) {
   return (t>u) ? t : u;
 }
+
+template <typename T, typename U, typename V>
+inline T Clamp(const T &t, const U &min_, const V &max_) {
+  if (t < min_) return min_;
+  if (t > max_) return max_;
+  return t;
+}
+
+// Convert degrees in radians
+inline Float Radians(Float degrees) {
+  return degrees * Pi / 180.0;
+}
+
+// Convert radians in degree
+inline Float Degrees(Float radians) {
+   return (180 / Pi) * radians;
+}
+
+
+#endif

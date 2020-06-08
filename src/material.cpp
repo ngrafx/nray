@@ -1,13 +1,20 @@
 #include "material.h"
 
 #include "primitive.h"
-#include "rand.h"
+
+
+Float Schlick(Float cosine, Float ref_idx) {
+    auto r0 = (1-ref_idx) / (1+ref_idx);
+    r0 = r0*r0;
+    return r0 + (1-r0)*pow((1 - cosine),5);
+}
 
 
 bool LambertianMaterial::Scatter( const Ray& r_in, const Intersection& rec, Color& attenuation, Ray& scattered ) const  {
-        Vec3 scatter_direction = rec.normal + Rng::RandomVector();
+        Vec3 scatter_direction = rec.normal + RandomUnitVector<Float>();
         scattered = Ray(rec.p, scatter_direction);
         attenuation = _albedo;
+        // attenuation = Vec3(1, 0, 1);
         return true;
 }
 
@@ -41,7 +48,7 @@ bool DielectricMaterial::Scatter( const Ray& r_in, const Intersection& rec, Colo
 
 bool MetalMaterial::Scatter( const Ray& r_in, const Intersection& rec, Color& attenuation, Ray& scattered ) const  {
     Vec3 reflected = Reflect(Normalize(r_in.Direction()), rec.normal);
-    scattered = Ray(rec.p, reflected + _fuzz*Rng::random_in_unit_sphere());
+    scattered = Ray(rec.p, reflected + _fuzz*RandomVectorInUnitSphere<Float>());
     attenuation = _albedo;
     return (Dot(scattered.Direction(), rec.normal) > 0);
 }

@@ -1,14 +1,13 @@
 #pragma once
 
+#ifndef MATERIAL_H
+#define MATERIAL_H
+
 #include "nray.h"
 #include "geometry.h"
 
 
-Float Schlick(Float cosine, Float ref_idx) {
-    auto r0 = (1-ref_idx) / (1+ref_idx);
-    r0 = r0*r0;
-    return r0 + (1-r0)*pow((1 - cosine),5);
-}
+Float Schlick(Float cosine, Float ref_idx);
 
 
 // Base Material class that every material needs to inherit
@@ -20,6 +19,7 @@ class Material  {
 };
 
 
+// Lambertian Material
 class LambertianMaterial : public Material {
     public:
         LambertianMaterial(const Color& albedo) : _albedo(albedo) {}
@@ -32,7 +32,7 @@ class LambertianMaterial : public Material {
         Color _albedo;
 };
 
-
+// Dielectric Material
 class DielectricMaterial : public Material {
     public:
         DielectricMaterial(Float refractive_index) : _ref_idx(refractive_index) {}
@@ -45,7 +45,7 @@ class DielectricMaterial : public Material {
         Float _ref_idx;
 };
 
-
+// Metal Material
 class MetalMaterial : public Material {
     public:
         MetalMaterial(const Color& albedo, Float fuzziness) : _albedo(albedo), _fuzz(fuzziness < 1 ? fuzziness : 1) {}
@@ -58,3 +58,5 @@ class MetalMaterial : public Material {
         Color _albedo;
         Float _fuzz;
 };
+
+#endif
