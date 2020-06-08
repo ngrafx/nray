@@ -1,5 +1,5 @@
-#ifndef GEOMETRY_H
-#define GEOMETRY_H
+// #ifndef GEOMETRY_H
+// #define GEOMETRY_H
 /*
     nray source code is Copyright(c) 2020
                         Nicolas Delbecq
@@ -301,4 +301,4 @@ inline std::ostream &operator<<(std::ostream &os, const Ray &r) {
     return os;
 }
 
-#endif
+// #endif

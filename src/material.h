@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef MATERIAL_H
-#define MATERIAL_H
+// #ifndef MATERIAL_H
+// #define MATERIAL_H
 
 #include "nray.h"
 #include "geometry.h"
@@ -59,4 +59,4 @@ class MetalMaterial : public Material {
         Float _fuzz;
 };
 
-#endif
+// #endif

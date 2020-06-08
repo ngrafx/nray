@@ -1,7 +1,7 @@
 
 #pragma once
-#ifndef RAND_H
-#define RAND_H
+// #ifndef RAND_H
+// #define RAND_H
 
 #include <random>
 
@@ -22,4 +22,4 @@ class Rng {
     static std::mt19937 generator;
 };
 
-#endif
+// #endif

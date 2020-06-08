@@ -34,9 +34,7 @@
 #include "rand.h"
 #include "primitive.h"
 #include "camera.h"
-
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
+#include "image.h"
 
 
 // Initialize Random Number Generator
@@ -48,7 +46,7 @@ std::mt19937 Rng::generator = std::mt19937(0);
 
 
 // Generate a scene filled with Spheres
-PrimitiveList RandomScene() {
+PrimitiveList TestScene() {
     PrimitiveList world;
 
     world.add(
@@ -113,28 +111,6 @@ Color trace(const Ray& r, const Primitive& world, int depth) {
     return (1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0);
 }
 
-// int main() {
-//     Vec3 v(1.0, 1.2, 3.2);
-//     Vec3 v2(1.0, 1.2, 3.2);
-//     Vec3 v3 = v * v2 * 2;
-//     v3 *= 5;
-//     v3 *= v2;
-//     Vec3 v4 = v / v2 / 1.0;
-//     v4 /= 3;
-//     v4 /= v3;
-//     Vec3 v5 = Normalize(v4);
-//     bool eq = v == v2;
-//     bool neq = v != v2;
-//     Float d = Distance(v, v2);
-//     d = DistanceSquared(v, v2);
-//     Float dot = Dot(v, v2);
-//     Vec3 v6 = Cross(v, v2);
-//     std::cout << "Hello World!" << "\n";
-//     std::cout << (Normalize(v) * 10).Length() << std::endl;
-//     std::cout << v*v/Normalize(v) << std::endl;
-//     return 0;
-// }
-
 int main() {
     const int image_width = 200;
     const int image_height = 100;
@@ -142,14 +118,9 @@ int main() {
     const int max_depth = 15;
     Float aspect_ratio = double(image_width) / image_height;
 
-    // Initialize img buffer
-    unsigned char *img;
-    int n = image_width * image_height * 3;
-    img = new unsigned char[n];
+    Image img(image_width, image_height);
 
-    std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-
-    PrimitiveList world = RandomScene();
+    PrimitiveList world = TestScene();
 
     Vec3 lookfrom(13,2,3);
     Vec3 lookat(0,0,0);
@@ -160,7 +131,7 @@ int main() {
     Camera cam(lookfrom, lookat, vup, (Float)20, aspect_ratio, aperture, dist_to_focus);
 
     for (int j = 0; j < image_height; j++) {
-        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
+        std::cerr << "\rScanlines remaining: " << image_height - 1 - j  << ' ' << std::flush;
         for (int i = 0; i < image_width; ++i) {
             Color color;
             for (int s = 0; s < samples_per_pixel; ++s) {
@@ -171,29 +142,11 @@ int main() {
             }
             color /= (Float)samples_per_pixel;
 
-            // Remove nans
-            if (color[0] != color[0]) color[0] = 0.0;
-            if (color[1] != color[1]) color[1] = 0.0;
-            if (color[2] != color[2]) color[2] = 0.0;
-
-            // Gamma correction
-            color = Vec3( sqrt(color.x), sqrt(color.y), sqrt(color.z));
-
-            // Write to img buffer
-            unsigned char ir = static_cast<unsigned char>(256 * Clamp(color.x, 0.0, 0.999));
-            unsigned char ig = static_cast<unsigned char>(256 * Clamp(color.y, 0.0, 0.999));
-            unsigned char ib = static_cast<unsigned char>(256 * Clamp(color.z, 0.0, 0.999));
-
-            int index = (i + j * image_width) * 3;
-
-            img[index + 0] = ir;
-            img[index + 1] = ig;
-            img[index + 2] = ib;
+            img.SetPixel(i, j, color);
         }
     }
 
-    stbi_write_png("D:\\dev\\nray\\render2.png", image_width, image_height, 3, img, 0);
+    img.WriteToFile("D:\\dev\\nray\\render2.png");
 
-    delete[] img;
     std::cerr << "\nDone.\n";
 }

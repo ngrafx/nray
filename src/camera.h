@@ -1,5 +1,5 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+// #ifndef CAMERA_H
+// #define CAMERA_H
 
 #pragma once
 
@@ -33,4 +33,4 @@ class Camera {
         Float time0, time1;  // shutter open/close times
 };
 
-#endif
+// #endif

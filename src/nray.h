@@ -30,8 +30,8 @@
  */
 #pragma once
 
-#ifndef NRAY_H
-#define NRAY_H
+// #ifndef NRAY_H
+// #define NRAY_H
 
 
 // Global headers
@@ -50,12 +50,10 @@ assert as long as it's defined before the inclusion of the assert header file.
 
 
 // Type definitions
-
 typedef float Float;
 
 
 // Global constants
-
 const Float MaxFloat = std::numeric_limits<Float>::max();
 const Float Infinity = std::numeric_limits<Float>::infinity();
 const Float Pi = 3.14159265358979323846;
@@ -64,16 +62,21 @@ const Float InvPi = 0.31830988618379067154;
 
 // Using
 using std::shared_ptr;
+using std::unique_ptr;
 using std::make_shared;
-using std::min;
-using std::max;
+using std::make_unique;
 
 
-// Class Forward Declaration
+// Forward Class Declaration
 // class Ray;
 struct Intersection;
 // class Material;
-
+template <typename T>
+struct Vector3 ;
+typedef Vector3<Float> Vec3;
+typedef Vector3<Float> Color;
+typedef Vector3<Float> Normal;
+typedef Vector3<Float> Point;
 
 // Utility Functions
 
@@ -110,4 +113,4 @@ inline Float Degrees(Float radians) {
 }
 
 
-#endif
+// #endif
