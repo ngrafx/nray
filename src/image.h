@@ -16,13 +16,20 @@ class Image {
     // Writes the Image as a *.png file
     void WriteToFile(char const *filename) const;
 
+    int Width() {return _width;}
+    int Height() {return _height;}
+
   private:
-    const int _width;
-    const int _height;
-    const int _channels;
+    int _width;
+    int _height;
+    int _channels;
 
     unique_ptr<Float[]> _pixels;
     int _size;
 
     int _Index(int x, int y) const {return (x + y * _width) * _channels;}
+};
+
+class Tile : Image {
+
 };

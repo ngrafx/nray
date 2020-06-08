@@ -1,8 +1,5 @@
 #pragma once
 
-// #ifndef MATERIAL_H
-// #define MATERIAL_H
-
 #include "nray.h"
 #include "geometry.h"
 
@@ -58,5 +55,3 @@ class MetalMaterial : public Material {
         Color _albedo;
         Float _fuzz;
 };
-
-// #endif

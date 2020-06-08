@@ -1,6 +1,4 @@
 #pragma once
-// #ifndef PRIMITIVE_H
-// #define PRIMITIVE_H
 
 #include <vector>
 
@@ -64,6 +62,3 @@ class Sphere: public Primitive  {
         Float radius;
         shared_ptr<Material> material;
 };
-
-
-// #endif

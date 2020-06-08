@@ -1,7 +1,4 @@
-
 #pragma once
-// #ifndef RAND_H
-// #define RAND_H
 
 #include <random>
 
@@ -21,5 +18,3 @@ class Rng {
     static std::uniform_real_distribution<Float> distribution01;
     static std::mt19937 generator;
 };
-
-// #endif

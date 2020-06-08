@@ -1,6 +1,3 @@
-// #ifndef CAMERA_H
-// #define CAMERA_H
-
 #pragma once
 
 #include "nray.h"
@@ -8,6 +5,8 @@
 
 class Camera {
     public:
+
+        Camera() {}
 
         Camera(
             Vec3 lookfrom, Vec3 lookat, Vec3 vup,
@@ -32,5 +31,3 @@ class Camera {
         Float lens_radius;
         Float time0, time1;  // shutter open/close times
 };
-
-// #endif
