@@ -6,6 +6,7 @@
 
 #include "geometry.h"
 #include "material.h"
+#include "bbox.h"
 
 /* Interesction stores all the data related to 
 a Ray hitting (intersecting) a surface (Primitive)
@@ -27,10 +28,11 @@ struct Intersection {
 // Every 'hittable' object needs to inherit that class
 class Primitive {
     public:
-        // Intersect is a pure virtual function that every Primitive needs to implement.
+        // Intersect and BoundingBox are pure virtual functions that every Primitive needs to implement.
         // It does not really matter how the Primitive is implemented as long as it 
-        // can be intersected
+        // can be intersected and we can get its bounding box
         virtual bool Intersect(const Ray& r, Float t_min, Float t_max, Intersection& rec) const = 0;
+        virtual bool BoundingBox(Float t0, Float t1, BBox& output_box) const = 0;
 };
 
 // Primitive List Container
@@ -43,10 +45,13 @@ class PrimitiveList: public Primitive  {
         void add(shared_ptr<Primitive> object) { _objects.push_back(object); }
 
         virtual bool Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec) const;
+        virtual bool BoundingBox(Float t0, Float t1, BBox& output_box) const;
 
     private:
         std::vector<shared_ptr<Primitive>> _objects;
+        friend class BVH;
 };
+
 
 // Sphere Primitive
 class Sphere: public Primitive  {
@@ -57,8 +62,35 @@ class Sphere: public Primitive  {
             : center(center_), radius(radius_), material(mat_) {};
 
         virtual bool Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec) const;
+        virtual bool BoundingBox(Float t0, Float t1, BBox& output_box) const;
 
         Point center;
         Float radius;
         shared_ptr<Material> material;
 };
+
+
+// BVH Container
+class BVH : public PrimitiveList {
+    public:
+        BVH();
+        BVH(PrimitiveList& list, Float time0, Float time1) : BVH(list._objects, 0, list._objects.size(), time0, time1) {}
+
+        BVH( std::vector<shared_ptr<Primitive>>& objects,
+             size_t start, size_t end, Float time0, Float time1 );
+
+        virtual bool Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec) const;
+        virtual bool BoundingBox(Float t0, Float t1, BBox& output_box) const;
+    
+    private:
+
+        shared_ptr<Primitive> _left;
+        shared_ptr<Primitive> _right;
+        BBox _bbox;
+};
+
+// BVH Utility functions
+inline bool _BBoxCompare(const shared_ptr<Primitive> a, const shared_ptr<Primitive> b, int axis);
+bool _BBoxCompareX(const shared_ptr<Primitive> a, const shared_ptr<Primitive> b);
+bool _BBoxCompareY(const shared_ptr<Primitive> a, const shared_ptr<Primitive> b);
+bool _BBoxCompareZ(const shared_ptr<Primitive> a, const shared_ptr<Primitive> b);

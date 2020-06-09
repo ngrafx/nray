@@ -4,6 +4,7 @@
 
 class Image {
   public:
+    Image() {}
     Image(int width, int height);
 
     // Returns the Color at pixel (x, y);

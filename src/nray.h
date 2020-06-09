@@ -49,6 +49,7 @@ struct Options {
   int image_width;
   int image_height;
   Float image_aspect_ratio;
+  int tile_size;
   int pixel_samples;
   int max_ray_depth;
   char const *image_out;
@@ -71,6 +72,12 @@ template <typename T, typename U>
 T Max(const T &t, const U &u) {
   return (t>u) ? t : u;
 }
+
+template <typename T, typename U>
+T FFmin(T a, U b) { return a <= b ? a : b; }
+
+template <typename T, typename U>
+T FFmax(T a, U b) { return a >= b ? a : b; }
 
 template <typename T, typename U, typename V>
 inline T Clamp(const T &t, const U &min_, const V &max_) {
