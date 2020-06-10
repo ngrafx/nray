@@ -50,20 +50,59 @@ void Scene::RenderTileDummy(int tile_number) {
 }
 
 void Scene::RenderTile(int tile_number) {
+    int tsize = _options.tile_size;
     Color rand = RandomVector<Float>();
-    int start_x = tile_number * _options.tile_size; 
-    int start_y;
+    int start_x = (tile_number % _numTilesWidth) * tsize;
+    int end_x = start_x + tsize;
     
+    int start_y = (tile_number / _numTilesWidth) * tsize;
+    int end_y = start_y + tsize;
+
+    // for (int y = start_y; y< end_y; y++) {
+    //     for (int x = start_x; x< end_x; x++) {
+    //         _img.SetPixel(x, y, rand);
+    //     }
+    // }
+    for (int y = start_y; y< end_y; y++) {
+        // std::cerr << "\rScanlines remaining: " << _img.Height() - 1 - j  << ' ' << std::flush;
+        for (int x = start_x; x< end_x; x++) {
+            Color color;
+            for (int s = 0; s < _options.pixel_samples; ++s) {
+                Float u = (x + Rng::Rand01()) / _img.Width();
+                Float v = 1.0 - (y + Rng::Rand01()) / _img.Height();
+                Ray r = _camera.GetRay(u, v);
+                color += Trace(r, _world, _options.max_ray_depth);
+            }
+            color /= (Float) _options.pixel_samples;
+
+            _img.SetPixel(x, y, color);
+        }
+    }
+
+    _updateProgress();
+}
+
+void Scene::_updateProgress() {
+    std::unique_lock<std::mutex> lck(_mtx);
+    _renderedTiles++;
+    Float perc = _renderedTiles / (Float)_numTiles;
+    //std::cout << "Rendered " << perc * 100 << " %\n";
+    std::cerr << "\rRendered " << perc * 100 << "% " << std::flush;
 }
 
 Image Scene::Render() {
+
     // Init the _threads
     _threads.clear();
     // Slice the image in multiple tiles
-    _numTiles = _options.image_width / _options.tile_size;
+    _numTilesWidth = (int) ceil( (Float)_options.image_width / _options.tile_size );
+    int _numTilesHeight = (int) ceil( (Float)_options.image_height / _options.tile_size );
+    _numTiles = _numTilesWidth * _numTilesHeight;
+    _renderedTiles = 0;
+    
     // Send each tile to render on a thread
     for (int i = 0; i < _numTiles; i++) {
-        _threads.emplace_back(std::thread(&Scene::RenderTileDummy, this, i));
+        _threads.emplace_back(std::thread(&Scene::RenderTile, this, i));
     }
 
     // Wait for each Thread to finish

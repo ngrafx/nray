@@ -25,11 +25,17 @@ class Scene {
     void RenderTileDummy(int tile_number);
 
   private:
+
+    void _updateProgress();
+
     Camera _camera;
     shared_ptr<Primitive> _world;
     Options _options;
     Image _img;
     int _numTiles;
+    int _numTilesWidth;
+
+    int _renderedTiles;
 
     std::vector<std::thread> _threads;
     std::mutex _mtx;

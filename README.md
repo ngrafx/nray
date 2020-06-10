@@ -47,38 +47,47 @@ The project uses Object Oriented Programming techniques.
 Classes use appropriate access specifiers for class members.
 
 Class constructors utilize member initialization lists.
+- All classes are using them when applicable (e.g. primitive.h)
 
 Classes abstract implementation details from their interfaces.
+- Have a look at the Image class (image.h)
 
 Classes encapsulate behavior.
 
 Classes follow an appropriate inheritance hierarchy.
-
-- In primitive.h you can see that all the premitives inherit from the pure virtual Primitive() class
+- In primitive.h you can see that all the primitives inherit from the pure virtual Primitive() class
 
 Overloaded functions allow the same function to operate on different parameters.
+- In geometry.h you can see that we're overloading all the operator for the templated Vector3<> class
 
 Derived class functions override virtual base class functions.
+- You can see all the children Primitive class in primitive.h
 
 Templates generalize functions in the project.
 - The Vector3 class is a templated class, implemented in geometry.h. There's also some templated functions in nray.h
 
 ### Memory Management
 The project makes use of references in function declarations.
+- Whenever the data is bigger than the simple data types I am using references. (e.g. l15 in image.h : SetPixel(int x, int y, Color &c))
 
 The project uses destructors appropriately.
+- As I'm only using smart pointers and not allocating anything 'manually' on the heap I didn't find the need to change the default Destructors.
 
 The project uses scope / Resource Acquisition Is Initialization (RAII) where appropriate.
+- This should be the case yes. I'm using make_shared for all the shared_ptr initialization
 
 The project follows the Rule of 5.
+- I'm following it although as I didn't need to 
 
 The project uses move semantics to move data, instead of copying it, where possible.
+- The Scene::Render methods return a std::move(Image) instead of copyting the data (scene.cpp l114)
 
 The project uses smart pointers instead of raw pointers.
+- I am only using Smart Pointers and am not using raw pointes
 
 ### Concurrency
 The project uses multithreading.
-- The Scene::Render() method uses multiple threads to render the image
+- The Scene::Render() method uses multiple threads to render the image in tiles (scene.cpp l95)
 
 A promise and future is used in the project.
 

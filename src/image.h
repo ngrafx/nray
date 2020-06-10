@@ -28,7 +28,7 @@ class Image {
     unique_ptr<Float[]> _pixels;
     int _size;
 
-    int _Index(int x, int y) const {return (x + y * _width) * _channels;}
+    bool _Index(int x, int y, int &index) const;
 };
 
 class Tile : Image {

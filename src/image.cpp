@@ -12,16 +12,28 @@ Image::Image(int width, int height) : _width(width), _height(height), _channels(
 
 
 Color Image::operator()(int x, int y) const {
-    int index = _Index(x, y);
+    int index;
+    if (!_Index(x, y, index))
+        return Color();
     return Color(_pixels[index], _pixels[index+1], _pixels[index+2]);
 }
 
 
 void Image::SetPixel(int x, int y, const Color &c) {
-    int index = _Index(x, y);
+    int index;
+    if (!_Index(x, y, index))
+        return;
     _pixels[index] = c.x;
     _pixels[index+1] = c.y;
     _pixels[index+2] = c.z;
+}
+
+bool Image::_Index(int x, int y, int &index) const {
+    index = -1;
+    if ( (x < 0) || (x >= _width) || (y < 0) || (y >= _height) )
+        return false;
+    index =  (x + y * _width) * _channels;
+    return true;
 }
 
 void Image::WriteToFile(char const *filename) const {

@@ -18,11 +18,11 @@ int main() {
 
     // Get Render options
     Options opt;
-    opt.image_width = 400;
-    opt.image_height = 200;
+    opt.image_width = 1024;
+    opt.image_height = 720;
     opt.image_aspect_ratio = Float(opt.image_width) / opt.image_height;
 
-    opt.tile_size = 16;
+    opt.tile_size = 42;
 
     opt.pixel_samples = 10;
     opt.max_ray_depth = 15;
