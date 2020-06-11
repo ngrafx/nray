@@ -168,6 +168,16 @@ inline Vector3<T> Cross(const Vector3<T> &u, const Vector3<T> &v) {
 }
 
 template <typename T>
+inline void CoordinateSystem(const Vector3<T> &v1, Vector3<T> *v2,
+                             Vector3<T> *v3) {
+    if (std::abs(v1.x) > std::abs(v1.y))
+        *v2 = Vector3<T>(-v1.z, 0, v1.x) / std::sqrt(v1.x * v1.x + v1.z * v1.z);
+    else
+        *v2 = Vector3<T>(0, v1.z, -v1.y) / std::sqrt(v1.y * v1.y + v1.z * v1.z);
+    *v3 = Cross(v1, *v2);
+}
+
+template <typename T>
 inline Float Distance(const Vector3<T> &u, const Vector3<T> &v) {
     // Returns the distance between 2 vectors
     assert(!u.HasNan() && !v.HasNan());
@@ -236,6 +246,26 @@ Vector3<T> RandomInUnitDisk() {
         if (p.LengthSquared() >= 1) continue;
         return p;
     }
+}
+
+template <typename T>
+int MaxDimension(const Vector3<T> &v) {
+    return (v.x > v.y) ? ((v.x > v.z) ? 0 : 2) : ((v.y > v.z) ? 1 : 2);
+}
+
+template <typename T>
+Vector3<T> Abs(const Vector3<T> &v) {
+    return Vector3<T>(std::abs(v.x), std::abs(v.y), std::abs(v.z));
+}
+
+template <typename T>
+Vector3<T> Permute(const Vector3<T> &p, int x, int y, int z) {
+    return Vector3<T>(p[x], p[y], p[z]);
+}
+
+template <typename T>
+T MaxComponent(const Vector3<T> &v) {
+    return std::max(v.x, std::max(v.y, v.z));
 }
 
 

@@ -25,6 +25,7 @@ const Float MaxFloat = std::numeric_limits<Float>::max();
 const Float Infinity = std::numeric_limits<Float>::infinity();
 const Float Pi = 3.14159265358979323846;
 const Float InvPi = 0.31830988618379067154;
+#define MachineEpsilon (std::numeric_limits<Float>::epsilon() * 0.5)
 
 
 // Using
@@ -84,6 +85,10 @@ inline T Clamp(const T &t, const U &min_, const V &max_) {
   if (t < min_) return min_;
   if (t > max_) return max_;
   return t;
+}
+
+inline Float Gamma(int n) {
+    return (n * MachineEpsilon) / (1 - n * MachineEpsilon);
 }
 
 // Convert degrees in radians

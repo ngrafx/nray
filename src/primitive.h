@@ -94,3 +94,36 @@ inline bool _BBoxCompare(const shared_ptr<Primitive> a, const shared_ptr<Primiti
 bool _BBoxCompareX(const shared_ptr<Primitive> a, const shared_ptr<Primitive> b);
 bool _BBoxCompareY(const shared_ptr<Primitive> a, const shared_ptr<Primitive> b);
 bool _BBoxCompareZ(const shared_ptr<Primitive> a, const shared_ptr<Primitive> b);
+
+
+// Triangle & TriangleMesh
+struct TriangleMesh {
+    TriangleMesh(int nTriangles_, std::vector<int> &&vertexIndices_, unique_ptr<Point[]> &&vp_, unique_ptr<Normal[]> &&vn_ ) : 
+                                  nTriangles(nTriangles_), vertexIndices(vertexIndices_) {
+        vp = std::move(vp_);
+        vn = std::move(vn_);
+    }
+
+    const int nTriangles;
+    // const int nVertices;
+    std::vector<int> vertexIndices;
+    unique_ptr<Point[]> vp;
+    unique_ptr<Normal[]> vn;
+
+};
+
+class Triangle : public Primitive {
+    public:
+        Triangle(const shared_ptr<TriangleMesh> &mesh, int index) : _mesh(mesh) { _index = &mesh->vertexIndices[3*index]; }
+
+        virtual bool Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec) const;
+        virtual bool BoundingBox(Float t0, Float t1, BBox& output_box) const;
+    private:
+        shared_ptr<TriangleMesh> _mesh;
+        const int *_index;
+};
+
+// Triangle & TriangleMesh Utility Functions
+std::vector<shared_ptr<Primitive>> CreateTriangleMesh(
+    int nTriangles, std::vector<int> &&vertexIndices, 
+    unique_ptr<Point[]> &&vp, unique_ptr<Normal[]> &&vn );
