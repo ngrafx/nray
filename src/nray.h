@@ -21,11 +21,12 @@ typedef float Float;
 
 
 // Global constants
-const Float MaxFloat = std::numeric_limits<Float>::max();
-const Float Infinity = std::numeric_limits<Float>::infinity();
-const Float Pi = 3.14159265358979323846;
-const Float InvPi = 0.31830988618379067154;
+constexpr Float MaxFloat = std::numeric_limits<Float>::max();
+constexpr Float Infinity = std::numeric_limits<Float>::infinity();
+constexpr Float Pi = 3.14159265358979323846;
+constexpr Float InvPi = 0.31830988618379067154;
 #define MachineEpsilon (std::numeric_limits<Float>::epsilon() * 0.5)
+constexpr Float kEpsilon = 1e-8;
 
 
 // Using

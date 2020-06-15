@@ -18,15 +18,15 @@ int main() {
 
     // Get Render options
     Options opt;
-    opt.image_width = 1024;
-    opt.image_height = 720;
+    opt.image_width = 400;
+    opt.image_height = 200;
     opt.image_aspect_ratio = Float(opt.image_width) / opt.image_height;
 
-    opt.tile_size = 42;
+    opt.tile_size = 16;
 
     opt.pixel_samples = 10;
-    opt.max_ray_depth = 15;
-    opt.image_out = "D:\\dev\\nray\\render3.png";
+    opt.max_ray_depth = 2;
+    opt.image_out = "D:\\dev\\nray\\render6.png";
 
     std::cout << "___\n";
     std::cout << "Render Settings: \n";
@@ -39,7 +39,8 @@ int main() {
     
     // Generate Scene
     timer.Start();
-    Scene scene(GenerateTestScene(opt));
+    // Scene scene(GenerateTestScene(opt));
+    Scene scene = GenerateBunnyScene(opt);
     timer.Stop();
     std::cout << "Scene generated in: ";
     timer.Print();

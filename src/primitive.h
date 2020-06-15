@@ -33,6 +33,8 @@ class Primitive {
         // can be intersected and we can get its bounding box
         virtual bool Intersect(const Ray& r, Float t_min, Float t_max, Intersection& rec) const = 0;
         virtual bool BoundingBox(Float t0, Float t1, BBox& output_box) const = 0;
+
+        shared_ptr<Material> material;
 };
 
 // Primitive List Container
@@ -42,7 +44,8 @@ class PrimitiveList: public Primitive  {
         PrimitiveList(shared_ptr<Primitive> object) { add(object); }
 
         void clear() { _objects.clear(); }
-        void add(shared_ptr<Primitive> object) { _objects.push_back(object); }
+        void add(shared_ptr<Primitive> object) { _objects.emplace_back(object); }
+        void add(std::vector<shared_ptr<Primitive>> objs) { _objects.insert( _objects.end(), objs.begin(), objs.end()) ;}
 
         virtual bool Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec) const;
         virtual bool BoundingBox(Float t0, Float t1, BBox& output_box) const;
@@ -98,32 +101,46 @@ bool _BBoxCompareZ(const shared_ptr<Primitive> a, const shared_ptr<Primitive> b)
 
 // Triangle & TriangleMesh
 struct TriangleMesh {
-    TriangleMesh(int nTriangles_, std::vector<int> &&vertexIndices_, unique_ptr<Point[]> &&vp_, unique_ptr<Normal[]> &&vn_ ) : 
-                                  nTriangles(nTriangles_), vertexIndices(vertexIndices_) {
+    TriangleMesh(int nTriangles_, std::vector<int> &&vertexIndices_, std::vector<Point> &&vp_ ) : 
+                                  nTriangles(nTriangles_) {
+        vertexIndices = std::move(vertexIndices_);
         vp = std::move(vp_);
-        vn = std::move(vn_);
+        //vn = std::move(vn_);
     }
 
     const int nTriangles;
     // const int nVertices;
     std::vector<int> vertexIndices;
-    unique_ptr<Point[]> vp;
-    unique_ptr<Normal[]> vn;
+    std::vector<Point> vp; // Vertices positions
+    // unique_ptr<Normal[]> vn;
+    // unique_ptr<Vec3[]> s;
+    // unique_ptr<Vec2[]> uv;
+    // std::shared_ptr<Texture<Float>> alphaMask, shadowAlphaMask;
 
 };
 
 class Triangle : public Primitive {
     public:
-        Triangle(const shared_ptr<TriangleMesh> &mesh, int index) : _mesh(mesh) { _index = &mesh->vertexIndices[3*index]; }
+        // Triangle(const shared_ptr<TriangleMesh> &mesh, int index, shared_ptr<Material> mat) : _mesh(mesh), material(mat) { _index = &mesh->vertexIndices[3*index]; }
+        Triangle(const shared_ptr<TriangleMesh> &mesh, int index, shared_ptr<Material> mat);
 
         virtual bool Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec) const;
         virtual bool BoundingBox(Float t0, Float t1, BBox& output_box) const;
+
+        shared_ptr<TriangleMesh> Mesh() { return _mesh;};
+        int * Index() { return _index;}
+
+        shared_ptr<Material> material;
+    
     private:
         shared_ptr<TriangleMesh> _mesh;
-        const int *_index;
+        //const int *_index;
+        int *_index;
+        // BBox _bbox;
+        
 };
 
 // Triangle & TriangleMesh Utility Functions
 std::vector<shared_ptr<Primitive>> CreateTriangleMesh(
     int nTriangles, std::vector<int> &&vertexIndices, 
-    unique_ptr<Point[]> &&vp, unique_ptr<Normal[]> &&vn );
+    std::vector<Point> &&vp);//, unique_ptr<Normal[]> &&vn );

@@ -7,6 +7,11 @@ class Image {
     Image() {}
     Image(int width, int height);
 
+    Image(const Image& other); // copy constructor
+    Image(Image&& other); // move constructor
+    Image& operator=(const Image& other); // copy assignment operator
+    Image& operator=(Image&& other); // move assignment operator
+
     // Returns the Color at pixel (x, y);
     Color operator()(int x, int y) const;
     Color& operator()(int x, int y);

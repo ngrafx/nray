@@ -11,6 +11,64 @@ Image::Image(int width, int height) : _width(width), _height(height), _channels(
 }
 
 
+Image::Image(const Image& other)
+{
+    // std::cout << "Image Copy Constructor" << std::endl;
+
+    _width = other._width;
+    _height = other._height;
+    _channels = other._channels;
+    _size = other._size;
+
+    _pixels = make_unique<Float[]>(_size);
+    std::copy(other._pixels.get(), other._pixels.get()+_size, _pixels.get());
+
+}
+
+Image::Image(Image&& other)
+{
+    // std::cout << "Image Move Constructor" << std::endl;
+
+    _width = other._width;
+    _height = other._height;
+    _channels = other._channels;
+    _size = other._size;
+
+    _pixels = std::move(other._pixels);
+}
+
+Image& Image::operator=(const Image& other)
+{
+    // std::cout << "Image Copy Assignment Operator" << std::endl;
+
+    if (&other != this) {
+        _width = other._width;
+        _height = other._height;
+        _channels = other._channels;
+        _size = other._size;
+
+        _pixels = make_unique<Float[]>(_size);
+        std::copy(other._pixels.get(), other._pixels.get()+_size, _pixels.get());
+    }
+    return *this;
+}
+
+Image& Image::operator=(Image&& other)
+{
+    // std::cout << "Image Move Assignment Operator" << std::endl;
+
+    if (&other != this) {
+        _width = other._width;
+        _height = other._height;
+        _channels = other._channels;
+        _size = other._size;
+
+        _pixels = std::move(other._pixels);
+    }
+    return *this;
+}
+
+
 Color Image::operator()(int x, int y) const {
     int index;
     if (!_Index(x, y, index))
