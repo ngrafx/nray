@@ -1,7 +1,9 @@
 # Nray
 
+[img1]
+
 Nray is a multithreaded physically based raytracer made for the Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213).
-It very much inspired from Peter Shirley's awsome Raytracing series (https://raytracing.github.io/) with some design ideas from the great PBRT book (https://www.pbrt.org/) written by Matt Pharr, Wenzel Jakob and Greg Humphreys.
+It is very much inspired from Peter Shirley's awsome Raytracing series (https://raytracing.github.io/) with some design ideas from the great PBRT book (https://www.pbrt.org/) written by Matt Pharr, Wenzel Jakob and Greg Humphreys.
 
 ## Building and Running Locally
 
@@ -112,3 +114,4 @@ A mutex or lock is used in the project.
 
 A condition variable is used in the project.
 
+[img1]:                   images/cornell_box.png
