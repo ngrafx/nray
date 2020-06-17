@@ -12,7 +12,9 @@
 You must #define NDEBUG (or use the flag -DNDEBUG with g++) this will disable
 assert as long as it's defined before the inclusion of the assert header file.
 */
+#ifndef NDEBUG
 #define NDEBUG
+#endif
 #include <assert.h>
 
 
@@ -25,8 +27,11 @@ constexpr Float MaxFloat = std::numeric_limits<Float>::max();
 constexpr Float Infinity = std::numeric_limits<Float>::infinity();
 constexpr Float Pi = 3.14159265358979323846;
 constexpr Float InvPi = 0.31830988618379067154;
+constexpr Float Inv2Pi  = 0.15915494309189533577;
 #define MachineEpsilon (std::numeric_limits<Float>::epsilon() * 0.5)
 constexpr Float kEpsilon = 1e-8;
+
+constexpr Float ImageClampMax = 100;
 
 
 // Using
@@ -39,6 +44,7 @@ using std::make_unique;
 // Forward Class Declaration
 // class Ray;
 struct Intersection;
+class Scene;
 // class Material;
 template <typename T>
 struct Vector3 ;
@@ -47,14 +53,14 @@ typedef Vector3<Float> Color;
 typedef Vector3<Float> Normal;
 typedef Vector3<Float> Point;
 
-struct Options {
-  int image_width;
-  int image_height;
-  Float image_aspect_ratio;
-  int tile_size;
-  int pixel_samples;
-  int max_ray_depth;
-  char const *image_out;
+struct RenderSettings {
+  int image_width{200};
+  int image_height{100};
+  Float image_aspect_ratio{2};
+  int tile_size{16};
+  int pixel_samples{20};
+  int max_ray_depth{5};
+  char const *image_out{"./out.png"};
 };
 
 
@@ -67,12 +73,12 @@ bool IsNan(const T &v) {
 
 template <typename T, typename U>
 T Min(const T &t, const U &u) {
-  return (t<u) ? t : u;
+  return (t<=u) ? t : u;
 }
 
 template <typename T, typename U>
 T Max(const T &t, const U &u) {
-  return (t>u) ? t : u;
+  return (t>=u) ? t : u;
 }
 
 template <typename T, typename U>
@@ -101,6 +107,5 @@ inline Float Radians(Float degrees) {
 inline Float Degrees(Float radians) {
    return (180 / Pi) * radians;
 }
-
 
 // #endif

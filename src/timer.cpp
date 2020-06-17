@@ -18,5 +18,5 @@ void Timer::Print() {
         return;
     }
     
-    std::cout << minutes << "min" << seconds - (minutes*60) << "s ";
+    std::cout << minutes << "min" << seconds - (minutes*60) << "s";
 }

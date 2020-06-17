@@ -1,10 +1,26 @@
 #pragma once
 
+#include <string>
+
 #include "nray.h"
 #include "primitive.h"
 
+using std::string;
 
-std::vector<shared_ptr<Primitive>> loadObjFile(char const *filename);
-std::vector<shared_ptr<Primitive>> loadObjFile2(char const *filename);
+enum class SceneItem
+{
+    Settings,
+    Camera,
+    Sphere,
+    ObjMesh,
+    Material,
+    Environment,
+    Unknown
+};
 
-shared_ptr<Primitive> loadSceneFile(char const *filename);
+SceneItem ToSceneItem(string const &str);
+shared_ptr<Material> CreateMaterial(string const &line);
+
+std::vector<shared_ptr<Primitive>> LoadObjFile(char const *filename, shared_ptr<Material> material);
+
+Scene LoadSceneFile(char const *filename);

@@ -11,16 +11,16 @@ Float Schlick(Float cosine, Float ref_idx) {
 
 
 bool LambertianMaterial::Scatter( const Ray& r_in, const Intersection& rec, Color& attenuation, Ray& scattered ) const  {
-        Vec3 scatter_direction = rec.normal + RandomUnitVector<Float>();
-        scattered = Ray(rec.p, scatter_direction);
-        attenuation = _albedo;
-        // attenuation = Vec3(1, 0, 1);
-        return true;
+    Vec3 scatter_direction = rec.normal + RandomUnitVector<Float>();
+    scattered = Ray(rec.p, scatter_direction);
+    attenuation = _albedo;
+    // attenuation = Vec3(1, 0, 1);
+    return true;
 }
 
 
 bool DielectricMaterial::Scatter( const Ray& r_in, const Intersection& rec, Color& attenuation, Ray& scattered) const {
-    attenuation = Color(1.0, 1.0, 1.0);
+    attenuation = _albedo;
     Float etai_over_etat = (rec.front_face) ? (1.0 / _ref_idx) : (_ref_idx);
 
     Vec3 unit_direction = Normalize(r_in.Direction());

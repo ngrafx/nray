@@ -13,6 +13,10 @@ class Material  {
         virtual bool Scatter(
             const Ray& r_in, const Intersection& rec, Color& attenuation, Ray& scattered
         ) const = 0;
+
+        virtual Color Emitted() const {
+            return Color(0,0,0);
+        }
 };
 
 
@@ -32,14 +36,16 @@ class LambertianMaterial : public Material {
 // Dielectric Material
 class DielectricMaterial : public Material {
     public:
-        DielectricMaterial(Float refractive_index) : _ref_idx(refractive_index) {}
+        DielectricMaterial(Float refractive_index) : _ref_idx(refractive_index), _albedo(Color(1.0,1.0,1.0)) {}
+        DielectricMaterial(Color albedo, Float refractive_index) : _ref_idx(refractive_index), _albedo(albedo) {}
 
         virtual bool Scatter(
             const Ray& r_in, const Intersection& rec, Color& attenuation, Ray& scattered
         ) const;
 
     private:
-        Float _ref_idx;
+        Color _albedo;
+        Float _ref_idx{1};
 };
 
 // Metal Material
@@ -53,5 +59,24 @@ class MetalMaterial : public Material {
 
     private:
         Color _albedo;
-        Float _fuzz;
+        Float _fuzz{0};
+};
+
+// Emissive Material
+class EmissiveMaterial : public Material {
+    public:
+        EmissiveMaterial(const Color& albedo) : _albedo(albedo) {}
+
+        virtual bool Scatter(
+            const Ray& r_in, const Intersection& rec, Color& attenuation, Ray& scattered
+        ) const {
+            return false;
+        }
+
+        virtual Color Emitted() const {
+            return _albedo;
+        }
+    private:
+        Color _albedo;
+
 };

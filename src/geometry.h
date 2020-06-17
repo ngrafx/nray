@@ -268,6 +268,14 @@ T MaxComponent(const Vector3<T> &v) {
     return std::max(v.x, std::max(v.y, v.z));
 }
 
+inline Float SphericalTheta(const Vec3 &v) {
+    return std::acos(Clamp(v.z, -1, 1));
+}
+
+inline Float SphericalPhi(const Vec3 &v) {
+    Float p = std::atan2(v.y, v.x);
+    return (p < 0) ? (p + 2 * Pi) : p;
+}
 
 
 // Ray class
@@ -288,8 +296,8 @@ public:
 private:
     Point _origin; // Ray origin
     Vec3 _direction; // Ray Direction
-    Float _time; // Ray time
-    Float _tMax; // Ray max distance
+    Float _time{0}; // Ray time
+    Float _tMax{Infinity}; // Ray max distance
 };
 
 // Ray utility Functions

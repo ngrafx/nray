@@ -12,11 +12,11 @@
 a Ray hitting (intersecting) a surface (Primitive)
 */
 struct Intersection {
-    float t;
+    Float t{0};
     Point p;
     Normal normal;
     shared_ptr<Material> material;
-    bool front_face;
+    bool front_face{false};
 
     void SetFaceNormal(const Ray& r, const Normal& outward_normal) {
         front_face = Dot(r.Direction(), outward_normal) < 0;
@@ -44,12 +44,16 @@ class PrimitiveList: public Primitive  {
         PrimitiveList(shared_ptr<Primitive> object) { add(object); }
 
         void clear() { _objects.clear(); }
-        void add(shared_ptr<Primitive> object) { _objects.emplace_back(object); }
-        void add(std::vector<shared_ptr<Primitive>> objs) { _objects.insert( _objects.end(), objs.begin(), objs.end()) ;}
+        void add(shared_ptr<Primitive> object) { _objects.push_back(object); }
+        void add(std::vector<shared_ptr<Primitive>> objs) {
+            _objects.reserve(_objects.size() + objs.size());
+            _objects.insert( _objects.end(), objs.begin(), objs.end()) ;
+            }
 
         virtual bool Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec) const;
         virtual bool BoundingBox(Float t0, Float t1, BBox& output_box) const;
 
+    
     private:
         std::vector<shared_ptr<Primitive>> _objects;
         friend class BVH;
@@ -86,7 +90,6 @@ class BVH : public PrimitiveList {
         virtual bool BoundingBox(Float t0, Float t1, BBox& output_box) const;
     
     private:
-
         shared_ptr<Primitive> _left;
         shared_ptr<Primitive> _right;
         BBox _bbox;
@@ -101,18 +104,18 @@ bool _BBoxCompareZ(const shared_ptr<Primitive> a, const shared_ptr<Primitive> b)
 
 // Triangle & TriangleMesh
 struct TriangleMesh {
-    TriangleMesh(int nTriangles_, std::vector<int> &&vertexIndices_, std::vector<Point> &&vp_ ) : 
+    TriangleMesh(int nTriangles_, std::vector<int> &&vertexIndices_, std::vector<Point> &&vp_, std::vector<Normal> &&vn_) : 
                                   nTriangles(nTriangles_) {
         vertexIndices = std::move(vertexIndices_);
         vp = std::move(vp_);
-        //vn = std::move(vn_);
+        vn = std::move(vn_);
     }
 
     const int nTriangles;
     // const int nVertices;
     std::vector<int> vertexIndices;
     std::vector<Point> vp; // Vertices positions
-    // unique_ptr<Normal[]> vn;
+    std::vector<Point> vn;
     // unique_ptr<Vec3[]> s;
     // unique_ptr<Vec2[]> uv;
     // std::shared_ptr<Texture<Float>> alphaMask, shadowAlphaMask;
@@ -143,4 +146,5 @@ class Triangle : public Primitive {
 // Triangle & TriangleMesh Utility Functions
 std::vector<shared_ptr<Primitive>> CreateTriangleMesh(
     int nTriangles, std::vector<int> &&vertexIndices, 
-    std::vector<Point> &&vp);//, unique_ptr<Normal[]> &&vn );
+    std::vector<Point> &&vp, std::vector<Normal> &&vn,
+    shared_ptr<Material> material );

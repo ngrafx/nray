@@ -5,6 +5,8 @@
 #include "scene.h"
 #include "timer.h"
 
+#include "parser.h"
+
 
 // Initialize Random Number Generator
 // We initialize the generator with a constant seed
@@ -14,37 +16,37 @@ std::uniform_real_distribution<Float> Rng::distribution01 = std::uniform_real_di
 std::mt19937 Rng::generator = std::mt19937(0);
 
 
-int main() {
+int main(int argc, char *argv[]) {
 
-    // Get Render options
-    Options opt;
-    opt.image_width = 400;
-    opt.image_height = 200;
-    opt.image_aspect_ratio = Float(opt.image_width) / opt.image_height;
-
-    opt.tile_size = 16;
-
-    opt.pixel_samples = 10;
-    opt.max_ray_depth = 2;
-    opt.image_out = "D:\\dev\\nray\\render6.png";
-
-    std::cout << "___\n";
-    std::cout << "Render Settings: \n";
-    std::cout << "Image: " << opt.image_width << "x" << opt.image_height << "\n";
-    std::cout << "Pixel samples: " << opt.pixel_samples << "\n";
-    std::cout << "Ray Depth: " << opt.max_ray_depth << "\n\n";
+    std::cout << "\n\n";
+    std::cout << "::::    ::: :::::::::      :::   :::   ::: \n";
+    std::cout << ":+:+:   :+: :+:    :+:   :+: :+: :+:   :+: \n";
+    std::cout << ":+:+:+  +:+ +:+    +:+  +:+   +:+ +:+ +:+  \n";
+    std::cout << "+#+ +:+ +#+ +#++:++#:  +#++:++#++: +#++:   \n";
+    std::cout << "+#+  +#+#+# +#+    +#+ +#+     +#+  +#+    \n";
+    std::cout << "#+#   #+#+# #+#    #+# #+#     #+#  #+#    \n";
+    std::cout << "###    #### ###    ### ###     ###  ###    \n\n";
+    std::cout << "___\n\n";
 
     // Initialize timer
     Timer timer;
     
     // Generate Scene
+    Scene scene;
     timer.Start();
-    // Scene scene(GenerateTestScene(opt));
-    Scene scene = GenerateBunnyScene(opt);
+    if (argc < 2) {
+        std::cout << "\n No arguments specified, running test scene\n";
+        RenderSettings opt;
+        scene = GenerateTestScene(opt);
+    }
+    else {
+        scene = LoadSceneFile(argv[1]);
+    }
+    scene.PrintSettings();
     timer.Stop();
-    std::cout << "Scene generated in: ";
+    std::cout << "\nScene generated in: ";
     timer.Print();
-    std::cout << "\n\n";
+    std::cout << "\n";
 
     // Create image buffer
     Image img;
@@ -55,10 +57,9 @@ int main() {
     timer.Stop();
     std::cout << "\nScene rendered in: ";
     timer.Print();
-    std::cout << "\n\n";
 
     // Write the image to disk
-    img.WriteToFile(opt.image_out);
+    img.WriteToFile(scene.Settings().image_out);
 
-    std::cerr << "Rendered image to " << opt.image_out << "\n";
+    std::cerr << "\nRendered image to " << scene.Settings().image_out << "\n";
 }

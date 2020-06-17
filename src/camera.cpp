@@ -38,6 +38,7 @@ Camera::Camera(
 
 Ray Camera::GetRay(Float s, Float t) {
     Vec3 rd = lens_radius * RandomInUnitDisk<Float>();
+    // Vec3 rd;
     Vec3 offset = u * rd.x + v * rd.y;
     return Ray(
         origin + offset,

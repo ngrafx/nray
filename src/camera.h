@@ -28,6 +28,7 @@ class Camera {
         Vec3 horizontal;
         Vec3 vertical;
         Vec3 u, v, w;
-        Float lens_radius;
-        Float time0, time1;  // shutter open/close times
+        Float lens_radius{1};
+        Float time0{0};
+        Float time1{0};  // shutter open/close times
 };

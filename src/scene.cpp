@@ -1,44 +1,68 @@
 #include "scene.h"
 #include "parser.h"
 
-Color Trace(const Ray& r, shared_ptr<Primitive> world, int depth) {
+#include "image.h"
+
+Color Trace(const Ray& r, Scene *scene, int depth) {
     Intersection rec;
 
     // If we've exceeded the ray bounce limit, no more light is gathered.
     if (depth <= 0)
         return Color(0,0,0);
 
-    if (world->Intersect(r, 0.001, Infinity, rec)) {
-        Ray scattered;
-        Color attenuation;
-        if (rec.material->Scatter(r, rec, attenuation, scattered))
-            return attenuation * Trace(scattered, world, depth-1);
-        return Color(0,0,0);
+    if (!scene->World()->Intersect(r, 0.001, Infinity, rec)) {
+        return scene->SampleEnvironment(r);
     }
 
-    // If the ray doesn't intersect with any primitive
-    // returns our 'sky' color
-    Vec3 unit_direction = Normalize(r.Direction());
-    auto t = 0.5*(unit_direction.y + 1.0);
-    return (1.0-t)*Color(1.0, 1.0, 1.0) + t*Color(0.5, 0.7, 1.0);
+    Ray scattered;
+    Color attenuation;
+    Color emitted = rec.material->Emitted();
+    if (!rec.material->Scatter(r, rec, attenuation, scattered))
+        return emitted;
+    return emitted + attenuation * Trace(scattered, scene, depth-1);
 }
 
-
-Color TraceNormal(const Ray& r, shared_ptr<Primitive> world, int depth) {
+Color TraceNormalOnly(const Ray& r, Scene *scene) {
     Intersection rec;
-
-    // If we've exceeded the ray bounce limit, no more light is gathered.
-    if (depth <= 0)
-        return Color(0,0,0);
-
-    if (world->Intersect(r, 0.001, Infinity, rec)) {
+    if (scene->World()->Intersect(r, 0.001, Infinity, rec)) {
         Ray scattered;
         Color attenuation;
         // return rec.normal*0.5 + Color(0.5, 0.5, 0.5);
         return rec.normal;
     }
+    return Color(0,1,0);
+}
 
-    return Color(0,0,0);
+
+Scene::Scene(const Scene& other) {
+    _camera = other._camera;
+    _world = other._world;
+    _options = other._options;
+    _img = other._img;
+    ibl = other.ibl;
+}
+Scene::Scene(Scene&& other) {
+    _camera = other._camera;
+    _world = std::move(other._world);
+    _options = other._options;
+    _img = std::move(other._img);
+    ibl = std::move(other.ibl);
+}
+Scene& Scene::operator=(const Scene& other) {
+    _camera = other._camera;
+    _world = other._world;
+    _options = other._options;
+    _img = other._img;
+    ibl = other.ibl;
+    return *this;
+}
+Scene& Scene::operator=(Scene&& other) {
+    _camera = other._camera;
+    _world = std::move(other._world);
+    _options = other._options;
+    _img = std::move(other._img);
+    ibl = std::move(other.ibl);
+    return *this;
 }
 
 
@@ -63,28 +87,26 @@ void Scene::RenderTile() {
         int end_y = start_y + tsize;
 
         for (int y = start_y; y< end_y; y++) {
-            // std::cerr << "\rScanlines remaining: " << _img.Height() - 1 - j  << ' ' << std::flush;
             for (int x = start_x; x< end_x; x++) {
                 Color color;
                 for (int s = 0; s < _options.pixel_samples; ++s) {
                     Float u = (x + Rng::Rand01()) / _img.Width();
                     Float v = 1.0 - (y + Rng::Rand01()) / _img.Height();
                     Ray r = _camera.GetRay(u, v);
-                    color += Trace(r, _world, _options.max_ray_depth);
-                    // color += TraceNormal(r, _world, _options.max_ray_depth);
+                    color += Trace(r, this, _options.max_ray_depth);
+                    // color += TraceNormalOnly(r, this);
                 }
                 color /= (Float) _options.pixel_samples;
 
                 _img.SetPixel(x, y, color);
             }
         }
-
         _updateProgress();
     }
 }
 
 void Scene::_updateProgress() {
-    std::unique_lock<std::mutex> lck(_mtx);
+    std::unique_lock<std::mutex> lck(_mtx_cout);
     _renderedTiles++;
     Float perc = _renderedTiles / (Float)_numTiles;
     //std::cout << "Rendered " << perc * 100 << " %\n";
@@ -96,15 +118,17 @@ Image Scene::Render() {
 
     // Init the _threads
     _threads.clear();
-    int nThreads = std::thread::hardware_concurrency();
-
-    std::cout << "Running " << nThreads << " threads\n";
     
     // Slice the image in multiple tiles
     _numTilesWidth = (int) ceil( (Float)_options.image_width / _options.tile_size );
     int _numTilesHeight = (int) ceil( (Float)_options.image_height / _options.tile_size );
     _numTiles = _numTilesWidth * _numTilesHeight;
     _renderedTiles = 0;
+
+    int nThreads = Min(_numTiles, std::thread::hardware_concurrency());
+
+    std::cout << "\n\nRunning " << nThreads << " threads\n";
+
 
     // Adding all the tiles to the queue
     for (int i = 0; i < _numTiles; i++) {
@@ -113,7 +137,7 @@ Image Scene::Render() {
     
     // Send each tile to render on a thread
     for (int i = 0; i < nThreads; i++) {
-        _threads.emplace_back(std::thread(&Scene::RenderTileL, this));
+        _threads.emplace_back(std::thread(&Scene::RenderTile, this));
     }
 
     // Wait for each Thread to finish
@@ -125,77 +149,17 @@ Image Scene::Render() {
     return std::move(_img);
 }
 
-
-Scene::Scene(const Scene& other)
-{
-    std::cout << "Scene Copy Constructor" << std::endl;
-
-    _camera = other._camera;
-    _world = other._world;
-    _options = other._options;
-    _img = other._img;
-    _numTiles = other._numTiles;
-    _numTilesWidth = other._numTilesWidth;
-    _renderedTiles = 0;
-
-    _threads.clear();
+void Scene::PrintSettings() {
+    std::cout << "\nRender Settings: \n";
+    std::cout << "Image: " << _options.image_width << "x" << _options.image_height << "\n";
+    std::cout << "Pixel samples: " << _options.pixel_samples << "\n";
+    std::cout << "Ray Depth: " << _options.max_ray_depth << "\n";
+    std::cout << "Output: " << _options.image_out << "\n\n";
 }
-
-Scene::Scene(Scene&& other)
-{
-    std::cout << "Scene Move Constructor" << std::endl;
-
-    _camera = std::move(other._camera);
-    _world = std::move(other._world);
-    _options = std::move(other._options);
-    _img = std::move(other._img);
-    _numTiles = other._numTiles;
-    _numTilesWidth = other._numTilesWidth;
-    _renderedTiles = 0;
-
-    _threads.clear();
-}
-
-Scene& Scene::operator=(const Scene& other)
-{
-    std::cout << "Scene Copy Assignment Operator" << std::endl;
-
-    if (&other != this) {
-        _camera = other._camera;
-        _world = other._world;
-        _options = other._options;
-        _img = other._img;
-        _numTiles = other._numTiles;
-        _numTilesWidth = other._numTilesWidth;
-        _renderedTiles = 0;
-
-        _threads.clear();
-    }
-    return *this;
-}
-
-Scene& Scene::operator=(Scene&& other)
-{
-    std::cout << "Scene Move Assignment Operator" << std::endl;
-
-    if (&other != this) {
-        _camera = std::move(other._camera);
-        _world = std::move(other._world);
-        _options = std::move(other._options);
-        _img = std::move(other._img);
-        _numTiles = other._numTiles;
-        _numTilesWidth = other._numTilesWidth;
-        _renderedTiles = 0;
-
-        _threads.clear();
-    }
-    return *this;
-}
-
 
 
 // Generate a scene filled with Spheres
-Scene GenerateTestScene(Options &opt) {
+Scene GenerateTestScene(RenderSettings &opt) {
     Vec3 lookfrom(13,2,3);
     Vec3 lookat(0,0,0);
     Vec3 vup(0,1,0);
@@ -239,39 +203,12 @@ Scene GenerateTestScene(Options &opt) {
     world.add(
         make_shared<Sphere>(Point(0, 1, 0), 1.0, make_shared<DielectricMaterial>(1.5)));
     world.add(
-        make_shared<Sphere>(Point(-4, 1, 0), 1.0, make_shared<LambertianMaterial>(Color(0.4, 0.2, 0.1))));
+        make_shared<Sphere>(Point(-4, 1, 0), 1.0, make_shared<EmissiveMaterial>(Color(5, 0.2, 0.1))));
     world.add(
         make_shared<Sphere>(Point(4, 1, 0), 1.0, make_shared<MetalMaterial>(Color(0.7, 0.6, 0.5), 0.0)));
 
     shared_ptr<BVH> bvh = make_shared<BVH>(world, 0.0, 0.0);
-
-    return Scene(bvh, cam, opt);
-}
-
-// Generate a scene filled with Spheres
-Scene GenerateBunnyScene(Options &opt) {
-    Vec3 lookfrom(0,2,10);
-    Vec3 lookat(0,1,0);
-    Vec3 vup(0,1,0);
-    Float dist_to_focus = 10.0;
-    Float aperture = 0.1;
-
-    Camera cam(lookfrom, lookat, vup, (Float)20, opt.image_aspect_ratio, aperture, dist_to_focus);
-
-    // shared_ptr<PrimitiveList> world = make_shared<PrimitiveList>();
-    PrimitiveList world;
-    std::vector<shared_ptr<Primitive>> bunny = loadObjFile("D:\\dev\\nray\\scenes\\objs\\bunny.obj");
-
-    // shared_ptr<LambertianMaterial> mat = make_shared<LambertianMaterial>(Color(0.5, 0.2, 0.5));
-    // for (auto &triangle : bunny) {
-    //     auto tri = dynamic_cast<Triangle*>(triangle.get());
-    //     triangle->material = mat;
-    //     std::cout << "Triangle {" << tri->Mesh()->vp[tri->Index()[0]] << ", " << tri->Mesh()->vp[tri->Index()[1]] << ", " << tri->Mesh()->vp[tri->Index()[2]] << "} \n";
-    // }
-    // world->add(bunny);
-    world.add(bunny);
-    shared_ptr<BVH> bvh = make_shared<BVH>(world, 0.0, 0.0);
-
-    // return Scene(world, cam, opt);
-    return Scene(bvh, cam, opt);
+    Scene scene(bvh, cam, opt);
+    scene.ibl.LoadFromFile("../scenes/maps/abandoned_hopper_terminal_02_2k.hdr");
+    return std::move(scene);
 }

@@ -126,6 +126,7 @@ BVH::BVH( std::vector<shared_ptr<Primitive>>& objects,
 
 }
 
+
 inline bool _BBoxCompare(const shared_ptr<Primitive> a, const shared_ptr<Primitive> b, int axis) {
     BBox ba, bb;
     if (!a->BoundingBox(0,0, ba) || !b->BoundingBox(0,0, bb)) {
@@ -169,19 +170,6 @@ bool BVH::Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec) con
 
 Triangle::Triangle(const shared_ptr<TriangleMesh> &mesh, int index, shared_ptr<Material> mat) : _mesh(mesh), material(mat) {
     _index = &mesh->vertexIndices[3*index];
-    // const Point &p0 = _mesh->vp[_index[0]];
-    // const Point &p1 = _mesh->vp[_index[1]];
-    // const Point &p2 = _mesh->vp[_index[2]];
-
-    // Float minx = Min(Min(p0.x, p1.x), p2.x);
-    // Float miny = Min(Min(p0.y, p1.y), p2.y);
-    // Float minz = Min(Min(p0.z, p1.z), p2.z);
-    // Float maxx = Max(Max(p0.x, p1.x), p2.x);
-    // Float maxy = Max(Max(p0.y, p1.y), p2.y);
-    // Float maxz = Max(Max(p0.z, p1.z), p2.z);
-    // BBox box( Vec3(minx, miny, minz), Vec3(maxx, maxy, maxz));
-
-    // _bbox = box;
 }
 
 
@@ -194,14 +182,14 @@ bool Triangle::Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec
     Vec3 v0v2 = p2 - p0;
     Vec3 pvec = Cross(r.Direction(),v0v2);
     float det = Dot(v0v1, pvec);
-// #ifdef CULLING
+#ifdef CULLING
     // if the determinant is negative the triangle is backfacing
     // if the determinant is close to 0, the ray misses the triangle
     if (det < kEpsilon) return false;
-// #else
+#else
 //     // ray and triangle are parallel if det is close to 0
 //     if (fabs(det) < kEpsilon) return false;
-// #endif
+#endif
     float invDet = 1 / det;
 
     Vec3 tvec = r.Origin() - p0;
@@ -213,17 +201,20 @@ bool Triangle::Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec
     if (v < 0 || u + v > 1) return false;
     
     // Set intersection info
-    rec.t = Dot(v0v2, qvec) * invDet;
+    Float t = Dot(v0v2, qvec) * invDet;
+    // Exit is t is not between min and max
+    if (t < tmin || t > tmax) return false;
+    rec.t = t;
     rec.p = r(rec.t);
     rec.material = material;
 
-    // Get Normal
-    Vec3 outward_normal = Cross(Normalize(v0v1), Normalize(v0v2));
+    // Compute Normal
+    Vec3 outward_normal =  Normalize(Cross(v0v1, v0v2));
     rec.SetFaceNormal(r, outward_normal);
-    // rec.normal = outward_normal;
+    // const Normal &n0 = _mesh->vn[_index[0]];
+    // rec.SetFaceNormal(r, n0);
 
     ///////////////////////////////////////////////////////////////////////////////////////////////// TODO read normal info from Triangle
-    
 
     return true;
 
@@ -241,10 +232,9 @@ bool Triangle::BoundingBox(Float t0, Float t1, BBox& output_box) const {
     Float maxx = Max(Max(p0.x, p1.x), p2.x);
     Float maxy = Max(Max(p0.y, p1.y), p2.y);
     Float maxz = Max(Max(p0.z, p1.z), p2.z);
+
     BBox box( Vec3(minx, miny, minz), Vec3(maxx, maxy, maxz));
     output_box = box;
-
-    // output_box = _bbox;
 
     return true;
 }
@@ -253,16 +243,17 @@ bool Triangle::BoundingBox(Float t0, Float t1, BBox& output_box) const {
 // Triangle & Triangle Mesh Utilities
 std::vector<shared_ptr<Primitive>> CreateTriangleMesh(
     int nTriangles, std::vector<int> &&vertexIndices, 
-    std::vector<Point> &&vp) {
-    
-    std::cout << "Num triangles: " << nTriangles << ", Num Vertices: " << vp.size() << ", Num faces: " << vertexIndices.size() / 3 << "\n";
+    std::vector<Point> &&vp, std::vector<Normal> &&vn,
+    shared_ptr<Material> material) {
 
-    shared_ptr<TriangleMesh> mesh = std::make_shared<TriangleMesh>( nTriangles, std::move(vertexIndices), std::move(vp) );
+    std::cout << " - Creating TriangleMesh: " << nTriangles << " triangles, " << vp.size() << " vertices\n";
+
+    shared_ptr<TriangleMesh> mesh = std::make_shared<TriangleMesh>( nTriangles, std::move(vertexIndices), std::move(vp), std::move(vn) );
     std::vector<shared_ptr<Primitive>> tris;
 
-    shared_ptr<LambertianMaterial> mat = make_shared<LambertianMaterial>(Color(1, 0.2, 0.5));
-
-    for (int i = 0; i < nTriangles; ++i)
-        tris.emplace_back(make_shared<Triangle>( mesh, i, mat));
+    // shared_ptr<Material> mat = make_shared<EmissiveMaterial>(Color(1, 0.2, 0.5));
+    for (int i = 0; i < nTriangles; ++i){
+        tris.emplace_back(make_shared<Triangle>( mesh, i, material));
+    }
     return std::move(tris);
 }

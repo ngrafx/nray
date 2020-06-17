@@ -1,6 +1,8 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 #include "image.h"
 #include "geometry.h"
@@ -19,7 +21,6 @@ Image::Image(const Image& other)
     _height = other._height;
     _channels = other._channels;
     _size = other._size;
-
     _pixels = make_unique<Float[]>(_size);
     std::copy(other._pixels.get(), other._pixels.get()+_size, _pixels.get());
 
@@ -33,7 +34,6 @@ Image::Image(Image&& other)
     _height = other._height;
     _channels = other._channels;
     _size = other._size;
-
     _pixels = std::move(other._pixels);
 }
 
@@ -46,7 +46,6 @@ Image& Image::operator=(const Image& other)
         _height = other._height;
         _channels = other._channels;
         _size = other._size;
-
         _pixels = make_unique<Float[]>(_size);
         std::copy(other._pixels.get(), other._pixels.get()+_size, _pixels.get());
     }
@@ -62,14 +61,23 @@ Image& Image::operator=(Image&& other)
         _height = other._height;
         _channels = other._channels;
         _size = other._size;
-
         _pixels = std::move(other._pixels);
     }
+
     return *this;
 }
 
 
 Color Image::operator()(int x, int y) const {
+    int index;
+    if (!_Index(x, y, index))
+        return Color();
+    return Color(_pixels[index], _pixels[index+1], _pixels[index+2]);
+}
+
+Color Image::operator()(Float s, Float t) const {
+    int x = s * _width;
+    int y = t * _height;
     int index;
     if (!_Index(x, y, index))
         return Color();
@@ -112,3 +120,23 @@ void Image::WriteToFile(char const *filename) const {
     stbi_write_png(filename, _width, _height, _channels, img, 0);
 }
 
+void Image::LoadFromFile(char const *filename) {
+    // Get image info from file
+    int x,y,comp;
+    stbi_info(filename, &x, &y, &comp);
+
+    _width = x;
+    _height = y;
+    _channels = 3;
+    _size = _width * _height * _channels;
+
+    // Load data
+    int n = 3;
+    float *data = stbi_loadf(filename, &x, &y, &n, 0);
+
+    // Copy data to our pixels array
+    _pixels = make_unique<Float[]>(_size);
+    for (int i = 0; i < _size; i++) {
+        _pixels[i] = Min(data[i], ImageClampMax);
+    }
+}
