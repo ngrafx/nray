@@ -1,6 +1,6 @@
 # Nray
 
-[img1]
+![Nray][img1]
 
 Nray is a multithreaded physically based raytracer made for the Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213).
 It is very much inspired from Peter Shirley's awsome Raytracing series (https://raytracing.github.io/) with some design ideas from the great PBRT book (https://www.pbrt.org/) written by Matt Pharr, Wenzel Jakob and Greg Humphreys.
