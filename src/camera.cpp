@@ -4,20 +4,22 @@
 Camera::Camera(
     Vec3 lookfrom, Vec3 lookat, Vec3 vup,
     Float vfov, // top to bottom, in degrees
-    Float aspect, Float aperture, Float focus_dist
+    Float aspect, Float aperture, Float focus_dist,
+    bool dof
 ) {
-    *this = Camera(lookfrom, lookat, vup, vfov, aspect, aperture, focus_dist, 0, 0);
+    *this = Camera(lookfrom, lookat, vup, vfov, aspect, aperture, focus_dist, dof, 0, 0);
 }
 
 Camera::Camera(
     Vec3 lookfrom, Vec3 lookat, Vec3 vup,
     Float vfov, // top to bottom, in degrees
-    Float aspect, Float aperture, Float focus_dist, Float t0, Float t1
+    Float aspect, Float aperture, Float focus_dist, bool dof, Float t0, Float t1
 ) {
     origin = lookfrom;
     lens_radius = aperture / 2;
     time0 = t0;
     time1 = t1;
+    do_dof = dof;
 
     auto theta = Radians(vfov);
     auto half_height = tan(theta/2);
@@ -37,8 +39,9 @@ Camera::Camera(
 }
 
 Ray Camera::GetRay(Float s, Float t) {
-    Vec3 rd = lens_radius * RandomInUnitDisk<Float>();
-    // Vec3 rd;
+    Vec3 rd;
+    if (do_dof)
+        rd = lens_radius * RandomInUnitDisk<Float>();
     Vec3 offset = u * rd.x + v * rd.y;
     return Ray(
         origin + offset,

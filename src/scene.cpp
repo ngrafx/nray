@@ -93,8 +93,11 @@ void Scene::RenderTile() {
                     Float u = (x + Rng::Rand01()) / _img.Width();
                     Float v = 1.0 - (y + Rng::Rand01()) / _img.Height();
                     Ray r = _camera.GetRay(u, v);
-                    color += Trace(r, this, _options.max_ray_depth);
-                    // color += TraceNormalOnly(r, this);
+                    if(_options.normalOnly){
+                        color += TraceNormalOnly(r, this);
+                    } else {
+                        color += Trace(r, this, _options.max_ray_depth);
+                    }
                 }
                 color /= (Float) _options.pixel_samples;
 
@@ -166,7 +169,7 @@ Scene GenerateTestScene(RenderSettings &opt) {
     Float dist_to_focus = 10.0;
     Float aperture = 0.1;
 
-    Camera cam(lookfrom, lookat, vup, (Float)20, opt.image_aspect_ratio, aperture, dist_to_focus);
+    Camera cam(lookfrom, lookat, vup, (Float)20, opt.image_aspect_ratio, aperture, dist_to_focus, true);
 
     //shared_ptr<PrimitiveList> world = make_shared<PrimitiveList>();
     PrimitiveList world;

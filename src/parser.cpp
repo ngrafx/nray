@@ -141,6 +141,7 @@ Scene LoadSceneFile(char const *filename) {
     // Camera attributes
     Vec3 lookfrom, lookat, vup;
     Float vfov, aperture, focus_dist;
+    int dof;
 
     // Default (and current) Material
     shared_ptr<Material> material = make_shared<LambertianMaterial> (Color(1,0,1));
@@ -160,6 +161,7 @@ Scene LoadSceneFile(char const *filename) {
         linestream >> key;
 
         Float x, y, z, val;
+        
 
         switch(ToSceneItem(key)) {
             case SceneItem::Settings :
@@ -184,6 +186,7 @@ Scene LoadSceneFile(char const *filename) {
                 linestream >> vfov;
                 linestream >> aperture;
                 linestream >> focus_dist;
+                linestream >> dof;
                 break;            
 
             case SceneItem::Sphere :
@@ -231,7 +234,7 @@ Scene LoadSceneFile(char const *filename) {
 
     // Init camera
     options.image_aspect_ratio = Float(options.image_width) / options.image_height;
-    Camera cam(lookfrom, lookat, vup, vfov, options.image_aspect_ratio, aperture, focus_dist);
+    Camera cam(lookfrom, lookat, vup, vfov, options.image_aspect_ratio, aperture, focus_dist, dof==1);
 
     // Create BVH
     shared_ptr<BVH> bvh = make_shared<BVH>(world, 0.0, 0.0);

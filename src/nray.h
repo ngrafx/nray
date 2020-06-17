@@ -60,6 +60,7 @@ struct RenderSettings {
   int tile_size{16};
   int pixel_samples{20};
   int max_ray_depth{5};
+  bool normalOnly{false};
   char const *image_out{"./out.png"};
 };
 

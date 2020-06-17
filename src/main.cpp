@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
     Scene scene;
     timer.Start();
     if (argc < 2) {
-        std::cout << "\n No arguments specified, running test scene\n";
+        std::cout << "\nNo scene specified, running test scene\n";
         RenderSettings opt;
         scene = GenerateTestScene(opt);
     }
