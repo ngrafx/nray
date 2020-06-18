@@ -32,7 +32,7 @@ Color TraceNormalOnly(const Ray& r, Scene *scene) {
         // return rec.normal*0.5 + Color(0.5, 0.5, 0.5);
         return rec.normal;
     }
-    return Color(0,1,0);
+    return Color(0,0,0);
 }
 
 
