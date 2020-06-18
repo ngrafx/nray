@@ -4,6 +4,7 @@
 #include "geometry.h"
 
 // BBox class
+// This is mainly used by the BVH Primitive to speed up intersection tests
 class BBox {
   public:
         BBox() {}

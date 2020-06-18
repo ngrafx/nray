@@ -1,5 +1,12 @@
 #pragma once
 
+// Main Project Header
+// Specify includes needed by most file
+// as well as constants, using declaration
+// forward class declarations and a few
+// utility functions
+
+
 // Global headers
 #include <limits>
 #include <iostream>
@@ -11,6 +18,7 @@
 You must #define NDEBUG (or use the flag -DNDEBUG with g++) this will disable
 assert as long as it's defined before the inclusion of the assert header file.
 */
+// Removing temporarily our assert() calls
 #ifndef NDEBUG
 #define NDEBUG
 #endif

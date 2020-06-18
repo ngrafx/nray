@@ -3,11 +3,15 @@
 #include "nray.h"
 #include "geometry.h"
 
-
+// Fresnel like function to compute a mask
+// between reflections and refractions for
+// Dielectric
 Float Schlick(Float cosine, Float ref_idx);
 
 
 // Base Material class that every material needs to inherit
+// Materials describe how light rays interacts with a primitive
+// They return a color and scatter another ray
 class Material  {
     public:
         virtual bool Scatter(

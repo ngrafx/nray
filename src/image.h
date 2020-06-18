@@ -2,6 +2,11 @@
 
 #include "nray.h"
 
+
+// Image class
+// Use to handle all the image based operation
+// Loading/Writing as well as setting pixel values etc
+
 class Image {
   public:
     Image() {}

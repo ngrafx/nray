@@ -9,6 +9,11 @@
 #include "camera.h"
 #include "primitive.h"
 
+
+// Scene class
+// This is the main object responsible for collecting
+// Primitive objects and rendering them
+
 class Scene {
   public:
     Scene() {};
@@ -69,7 +74,11 @@ class Scene {
     std::mutex _mtx_cout;
 };
 
+// Generates the test scene
 Scene GenerateTestScene(RenderSettings opt);
 
+// Recursive raytracing function
 Color Trace(const Ray& r, Scene *scene, int depth);
+
+// Returns the Normal values
 Color TraceNormalOnly(const Ray& r, Scene *scene);

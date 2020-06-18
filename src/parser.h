@@ -1,5 +1,9 @@
 #pragma once
 
+// Parsing functions
+// reads files and returns classes
+// for the renderer
+
 #include <string>
 
 #include "nray.h"

@@ -4,7 +4,7 @@
 
 #include "nray.h"
 
-// This is our Random-Number-Generator class helper
+// Random generation class helper
 class Rng {
   public:
     static Float Rand01() {

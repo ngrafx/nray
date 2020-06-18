@@ -3,6 +3,10 @@
 #include "nray.h"
 #include "geometry.h"
 
+
+// Camera Class
+// Used to shoot rays through the scene from given pixel.
+// It represents our 'eye'
 class Camera {
     public:
 
