@@ -109,7 +109,9 @@ For each tile we use the [Camera](src/camera.h) to throw multiple [Rays](src/geo
 The rest of the code just helps support and implement those main classes, for example the [parsing functions](src/parser.h) parse the different file inputs to generate data that nray understands.
 
 All the source files are in [src/](src/)
+
 External header libraries are in [external/](external/)
+
 Sample scenes in [senes/](scenes/) as well as the [objs](scenes/objs/) and [hdr images](scenes/maps/) they reference
 
 ## Additional Rubric Points
