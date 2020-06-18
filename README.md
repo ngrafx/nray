@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Nray is a multithreaded offline physically based raytracer. It reads a scene file that describes a camera, a lighting environment and several objects. It then renders the scene, using the raytracing algorithm and outputs an image. It is written in modern c++, and apart from the header-only stb_image library it is not using any other library so it's easy to compile and run it on different architectures. It is a learning project so I tried implementing myself every feature.
+Nray is a multithreaded offline physically based raytracer. It reads a scene file that describes a camera, a lighting environment and several objects. It then renders the scene, using the raytracing algorithm and outputs an image. It is written in modern c++, and apart from the header-only [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) and [stb_image_write.h](https://github.com/nothings/stb/blob/master/stb_image_write.h) it is not using any other libraries so it's easy to compile and run it on different architectures. It is a learning project so I tried implementing myself every feature.
 
 Raytracing isn't new and is very well documented, here are some the resources I used :
 - [Peter Shirley's Raytracing series](https://raytracing.github.io/)
