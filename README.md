@@ -44,12 +44,35 @@ It takes a few command line arguments :
 ```
 Usage:
 
-nray /path/to/scene.nray
-  Renders the specified scene
-nray --testscene
-  Renders the test scene
+ nray /path/to/scene.nray
+        Renders the specified scene
+
+ nray --testScene
+        Renders the test scene
+
 Optional:
-  -o /path/to/output/image.png
+
+ -o /path/to/output/image.png
+        Output the image to this path
+
+ -iw width
+        Sets the pixel width
+
+ -ih height
+        Sets the pixel height
+
+ -s number_of_pixel_samples
+        Sets the pixel samples
+
+ -d ray_depth
+        Sets the maximum ray depth (number of light bounces)
+
+ -t tile_size
+        Sets the tile size (defaults to 16)
+
+ --normalOnly
+        Render the Scene's normal only. No Lighting/material computation
+
 ```
 
 ### Files and Classes Structure

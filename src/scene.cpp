@@ -119,6 +119,9 @@ void Scene::_updateProgress() {
 
 Image Scene::Render() {
 
+    // Initialize the image buffer
+    _img = Image(_options.image_width, _options.image_height);
+
     // Init the _threads
     _threads.clear();
     
@@ -158,11 +161,13 @@ void Scene::PrintSettings() {
     std::cout << "Pixel samples: " << _options.pixel_samples << "\n";
     std::cout << "Ray Depth: " << _options.max_ray_depth << "\n";
     std::cout << "Output: " << _options.image_out << "\n\n";
+    if(_options.normalOnly)
+        std::cout << "\nSettings renderer to Normal Only\nn";
 }
 
 
 // Generate a scene filled with Spheres
-Scene GenerateTestScene(RenderSettings &opt) {
+Scene GenerateTestScene(RenderSettings opt) {
     Vec3 lookfrom(13,2,3);
     Vec3 lookat(0,0,0);
     Vec3 vup(0,1,0);

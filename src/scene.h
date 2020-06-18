@@ -12,13 +12,9 @@
 class Scene {
   public:
     Scene() {};
-    Scene(RenderSettings opt) : _options(opt) { _img = Image(_options.image_width, _options.image_height); }
-    Scene(shared_ptr<Primitive> world, Camera camera, RenderSettings opt) : _world(world), _camera(camera), _options(opt) {
-       _img = Image(_options.image_width, _options.image_height);
-    }
-    Scene(shared_ptr<Primitive> world, Camera camera, RenderSettings opt, Image &&ibl_) : _world(world), _camera(camera), _options(opt), ibl(ibl_) {
-       _img = Image(_options.image_width, _options.image_height);
-    }
+    Scene(RenderSettings opt) : _options(opt) {}
+    Scene(shared_ptr<Primitive> world, Camera camera, RenderSettings opt) : _world(world), _camera(camera), _options(opt) {}
+    Scene(shared_ptr<Primitive> world, Camera camera, RenderSettings opt, Image &&ibl_) : _world(world), _camera(camera), _options(opt), ibl(ibl_) {}
 
     Scene(const Scene& other); // copy constructor
     Scene(Scene&& other); // move constructor
@@ -46,6 +42,9 @@ class Scene {
 
     void PrintSettings();
     RenderSettings& Settings() { return _options;}
+    void Settings(RenderSettings &opt) {
+      _options = opt;
+      }
 
     Image ibl;
     
@@ -70,8 +69,7 @@ class Scene {
     std::mutex _mtx_cout;
 };
 
-Scene GenerateTestScene(RenderSettings &opt);
-Scene GenerateBunnyScene(RenderSettings &opt);
+Scene GenerateTestScene(RenderSettings opt);
 
 Color Trace(const Ray& r, Scene *scene, int depth);
 Color TraceNormalOnly(const Ray& r, Scene *scene);
