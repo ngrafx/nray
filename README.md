@@ -1,31 +1,5 @@
 # Nray
 
-![Nray][img1]
-
-Nray is a multithreaded physically based raytracer made for the Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213).
-It is very much inspired from Peter Shirley's awsome Raytracing series (https://raytracing.github.io/) with some design ideas from the great PBRT book (https://www.pbrt.org/) written by Matt Pharr, Wenzel Jakob and Greg Humphreys.
-
-## Building and Running Locally
-
-### Basic Build Instructions
-1. Make sure you have all the required dependencies
-2. Clone this repo.
-3. Make a build directory in the top level directory: `mkdir build && cd build`
-4. Compile: `cmake .. -DCMAKE_BUILD_TYPE=Release && make`
-5. Run it: `./nray --testScene`
-
-### Dependencies for Running Locally
-* cmake >= 3.7
-  * All OSes: [click here for installation instructions](https://cmake.org/install/)
-* make >= 4.1 (Linux, Mac), 3.81 (Windows)
-  * Linux: make is installed by default on most Linux distros
-  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
-  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
-* gcc/g++ >= 5.4
-  * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
-  * Windows: recommend using [MinGW](http://www.mingw.org/)
-
 ## Project Overview
 
 Nray is a multithreaded offline physically based raytracer. It reads a scene file that describes a camera, a lighting environment and several objects. It then renders the scene, using the raytracing algorithm and outputs an image. It is written in modern c++, and apart from the header-only stb_image library it is not using any other library so it's easy to compile and run it on different architectures. It is a learning project so I tried implementing myself every feature.
@@ -53,8 +27,29 @@ Here's a few example renders :
 ![Test Scene][img2]
 `./nray --testScene`
 
+## Building and Running Locally
 
-### Description and use
+### Basic Build Instructions
+1. Make sure you have all the required dependencies
+2. Clone this repo.
+3. Make a build directory in the top level directory: `mkdir build && cd build`
+4. Compile: `cmake .. -DCMAKE_BUILD_TYPE=Release && make`
+5. Run it: `./nray --testScene`
+
+### Dependencies for Running Locally
+* cmake >= 3.7
+  * All OSes: [click here for installation instructions](https://cmake.org/install/)
+* make >= 4.1 (Linux, Mac), 3.81 (Windows)
+  * Linux: make is installed by default on most Linux distros
+  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
+  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
+* gcc/g++ >= 5.4
+  * Linux: gcc / g++ is installed by default on most Linux distros
+  * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
+  * Windows: recommend using [MinGW](http://www.mingw.org/)
+
+
+## Description and use
 
 Once the program runs, a Scene is created and populated with multiple Primitive(s). Primitive represent objects that can be intersected and thus traced recursively by the main rendering function. Primitive have Material that describe how the light interacts with them. The Scene::Render method intialize multiple thread and have them render small sections of the Image (called tiles) at a time.
 For each tile we throw Ray(s) through the Camera and find out if the Ray intersect any scene Primitive. If so then we compute the lighting information and scatter the Ray further.
@@ -100,7 +95,8 @@ Optional:
 
 ```
 
-The --normalOnly mode is very useful for debugging as it bypass all the lighting & material computation as well as all the secondary rays and just outputs the Normal values as a Color :
+The --normalOnly mode is very useful for debugging as it bypass all the lighting & material computation as well as all the secondary rays and just outputs the Normal values as a Color.
+Note that to avoid being clamped by the image format normals are remapped from  (-1,1) to (0,1).
 
 ![Broken Bunny Normals][img4]
 
