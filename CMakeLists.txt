@@ -1,10 +1,15 @@
-cmake_minimum_required(VERSION 3.7)
+# usage
+# cmake -DCMAKE_BUILD_TYPE=Debug
+# cmake -DCMAKE_BUILD_TYPE=Release
+
+cmake_minimum_required(VERSION 3.6)
 
 add_definitions(-std=c++17)
 
-set(CXX_FLAGS "-Wall")
+# set(CXX_FLAGS "-Wall -O4")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 set(CMAKE_CXX_COMPILER "/usr/bin/g++")
+
 
 project(nray)
 
@@ -20,3 +25,5 @@ file(GLOB SOURCES
 include_directories("external/")
 
 add_executable(nray ${SOURCES})
+# Seems that Linux cannot always find pthread
+target_link_libraries( nray pthread )
