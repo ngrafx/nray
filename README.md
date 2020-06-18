@@ -53,7 +53,7 @@ Here's a few example renders :
 
 nray is a command line tool that takes a scene as an input and renders it as an image.
 
-It comes with 3 samples scenes that can be modified to render different things.
+It comes with 3 samples scenes that can be modified to render different things. Notes that the above example renders have been run with higher samples. I've kept the demo scenes relatively fast even on a modest computer.
 
 `./nray ../scenes/cornell_box.nray`
 
