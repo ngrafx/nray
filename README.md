@@ -12,7 +12,7 @@ It is very much inspired from Peter Shirley's awsome Raytracing series (https://
 2. Clone this repo.
 3. Make a build directory in the top level directory: `mkdir build && cd build`
 4. Compile: `cmake .. -DCMAKE_BUILD_TYPE=Release && make`
-5. Run it: `./nray`
+5. Run it: `./nray --testScene`
 
 ### Dependencies for Running Locally
 * cmake >= 3.7
@@ -28,19 +28,44 @@ It is very much inspired from Peter Shirley's awsome Raytracing series (https://
 
 ## Project Overview
 
-Nray is a multithreaded offline physically based raytracer. It reads a scene file that describes a camera, a lighting environment and several objects. It then use the raytracing algorithm to render it and output an image. Note that apart from stb_image.h I am not using any other library. This project is really a learning exercise and therefore I decided to implement every feature.
-Most of the math and ideas behind the project can be found in Peter Shirley's awsome Raytracing series (https://raytracing.github.io/) as well in the great PBRT book (https://www.pbrt.org/) written by Matt Pharr, Wenzel Jakob and Greg Humphreys.
+Nray is a multithreaded offline physically based raytracer. It reads a scene file that describes a camera, a lighting environment and several objects. It then renders the scene, using the raytracing algorithm and outputs an image. It is written in modern c++, and apart from the header-only stb_image library it is not using any other library so it's easy to compile and run it on different architectures. It is a learning project so I tried implementing myself every feature.
+
+Raytracing isn't new and is very well documented, here are some the resources I used :
+- [Peter Shirley's Raytracing series](https://raytracing.github.io/)
+- [Matt Pharr, Wenzel Jakob and Greg Humphreys PhysicallyBasedRayTracing](https://www.pbrt.org/)
+- [Scratch a Pixel](https://www.scratchapixel.com/)
+
+Nray comes with a few sample scenes and objects as well as some HDR images to use for Image-Based-Lighting. It can currently handle Spheres and Triangle Meshes. It can reads [.obj files](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
+It has a few different Materials defining how the objects interacts with the lights :
+- Lambertian
+- Dielectric
+- Metal
+- Emissive
+
+Here's a few example renders :
+
+![Broken Bunny][img3]
+`./nray ../scenes/broken_bunny.nray`
+
+![Cornell Box][img1]
+`./nray ../scenes/cornell_box.nray`
+
+![Test Scene][img2]
+`./nray --testScene`
+
+
+### Description and use
 
 Once the program runs, a Scene is created and populated with multiple Primitive(s). Primitive represent objects that can be intersected and thus traced recursively by the main rendering function. Primitive have Material that describe how the light interacts with them. The Scene::Render method intialize multiple thread and have them render small sections of the Image (called tiles) at a time.
 For each tile we throw Ray(s) through the Camera and find out if the Ray intersect any scene Primitive. If so then we compute the lighting information and scatter the Ray further.
 
-### Description and use
 
 Nray comes with 3 samples scenes that can be modified to render different things. The renderer can handle Spheres and Triangle Meshes, the latter can be read as an .obj file
 Once the project is built you can pass a scene file and run it
+
 `./nray ../scenes/cornell_box.nray`
 
-It takes a few command line arguments :
+It also takes a few command line arguments :
 ```
 Usage:
 
@@ -74,6 +99,13 @@ Optional:
         Render the Scene's normal only. No Lighting/material computation
 
 ```
+
+The --normalOnly mode is very useful for debugging as it bypass all the lighting & material computation as well as all the secondary rays and just outputs the Normal values as a Color :
+
+![Broken Bunny Normals][img4]
+
+Scene files are basically text files that describe the different elements to load in the scene. This is the intended syntax, comment line starts with #. Have a look at scenes/scene_template.nray for an detailed example of what is available.
+
 
 ### Files and Classes Structure
 
@@ -150,3 +182,6 @@ A mutex or lock is used in the project.
 A condition variable is used in the project.
 
 [img1]:                   images/cornell_box.png
+[img2]:                   images/test_scene.png
+[img3]:                   images/broken_bunny.png
+[img4]:                   images/broken_bunny_normals.png
