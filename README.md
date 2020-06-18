@@ -40,6 +40,18 @@ Nray comes with 3 samples scenes that can be modified to render different things
 Once the project is built you can pass a scene file and run it
 `./nray ../scenes/cornell_box.nray`
 
+It takes a few command line arguments :
+```
+Usage:
+
+nray /path/to/scene.nray
+  Renders the specified scene
+nray --testscene
+  Renders the test scene
+Optional:
+  -o /path/to/output/image.png
+```
+
 ### Files and Classes Structure
 
 Scene is the main class that gather a world (multiple Primitive) and render through a Camera to output an Image. Scene::Render() sends Ray to intersect with the world and return Color values;
