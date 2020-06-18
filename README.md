@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Nray is a multithreaded physically based raytracer. It reads a scene file that describes a camera, a lighting environment and several objects. It then renders the scene using the raytracing algorithm and outputs an image. It is written in modern c++, and apart from the header-only [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) and [stb_image_write.h](https://github.com/nothings/stb/blob/master/stb_image_write.h) it is not using any other libraries so it's easy to compile and run on different architectures. It is a learning project so I tried implementing myself every feature.
+Nray is a multithreaded physically based raytracer. It reads a scene file that describes a camera, a lighting environment and several objects. It then renders the scene using the raytracing algorithm and outputs an image. It is written in modern c++, and apart from the header only [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) and [stb_image_write.h](https://github.com/nothings/stb/blob/master/stb_image_write.h) it is not using any other libraries so it's easy to compile and run on different architectures. It is a learning project so I tried implementing myself every feature.
 
 Raytracing is very well documented, here are some of the resources I used :
 - [Peter Shirley's Raytracing series](https://raytracing.github.io/)
@@ -92,7 +92,7 @@ Optional:
 
 ```
 
-The --normalOnly mode is very useful for debugging as it bypass all the lighting & material computation as well as all the secondary rays and just outputs the Normal values as a Color.
+The --normalOnly mode is very useful for debugging as it bypass all the lighting & material computation as well as all the secondary rays and just outputs the Normal values as a Color. It is then much faster to render.
 Note that to avoid being clamped by the image format normals are remapped from  (-1,1) to (0,1).
 
 ![Broken Bunny Normals][img4]
@@ -107,6 +107,10 @@ Once the program runs, a [Scene](src/scene.h) is created and populated with mult
 For each tile we use the [Camera](src/camera.h) to throw multiple [Rays](src/geometry.h) (one per pixel samples to be correct) through every pixel. We then find out if the Ray intersect any scene Primitive. If so then we compute the lighting information using its Material and scatter the Ray further. We then take the average of all those color samples and set the final pixel color in the [Image](src/image.h). Once all the thread have finished rendering all the tiles we write the Image to disk as a .png file and exit the program.
 
 The rest of the code just helps support and implement those main classes, for example the [parsing functions](src/parser.h) parse the different file inputs to generate data that nray understands.
+
+All the source files are in [src/](src/)
+External header libraries are in [external/](external/)
+Sample scenes in [senes/](scenes/) as well as the [objs](scenes/objs/) and [hdr images](scenes/maps/) they reference
 
 ## Additional Rubric Points
 
@@ -134,7 +138,7 @@ Classes abstract implementation details from their interfaces.
 - Have a look at the [Image class](src/image.h). For example we can query and set the pixel [Colors](src/nray.h) by specifying x & y coordinates although the data is actually stored as a Float array. This simplify the use of the class (as the rest of the programs 'thinks' in 2d coordinates) regardless of how the class stores data internally
 
 Classes encapsulate behavior.
-- In the[Image class](src/image.h) all the image related operations are encapsulated
+- In the [Image class](src/image.h) all the image related operations are encapsulated
 
 Classes follow an appropriate inheritance hierarchy.
 - In [primitive.h](src/primitive.h) you can see that all the primitives inherit from the pure virtual Primitive() class, same goes with all the Materials
@@ -150,7 +154,7 @@ Templates generalize functions in the project.
 
 ### Memory Management
 The project makes use of references in function declarations.
-- Whenever the data is bigger than the simple data types I am using references. (e.g. l24 in [image.h](src/image.h) : SetPixel(int x, int y, Color &c))
+- Whenever the data is bigger than the simple data types I am using references. (e.g. l30 in [image.h](src/image.h) : SetPixel(int x, int y, Color &c))
 
 The project uses destructors appropriately.
 - As I'm only using smart pointers and not allocating anything 'manually' on the heap I didn't find the need to change the default Destructors.
@@ -162,20 +166,20 @@ The project follows the Rule of 5.
 - Project does follow the rule of 5. Both [Image](src/image.h) & [Scene](src/scene.h) have all 5 implemented as I needed to control their move mechanism
 
 The project uses move semantics to move data, instead of copying it, where possible.
-- The Scene::Render methods return a std::move(Image) instead of copyting the data ([scene.cpp](src/scene.cpp) l152). Same technique is used throughout the project, in  CreateTriangleMesh() for example ([primitive.cpp](src/primitive.cpp), l258)
+- The Scene::Render methods return a std::move(Image) instead of copyting the data ([scene.cpp](src/scene.cpp) l158). Same technique is used throughout the project, in  CreateTriangleMesh() for example [primitive.cpp](src/primitive.cpp), l258
 
 The project uses smart pointers instead of raw pointers.
 - I am only using Smart Pointers and am not directly using raw pointers apart as arguments in certain function calls as per the Core C++ guidelines
 
 ### Concurrency
 The project uses multithreading.
-- The Scene::Render() method uses multiple std::threads to render the image in tiles ([scene.cpp](src/scene.cpp) l120)
+- The Scene::Render() method uses multiple std::threads to render the image in tiles ([scene.cpp](src/scene.cpp) l123)
 
 A promise and future is used in the project.
 - Didn't really need to use this for now
 
 A mutex or lock is used in the project.
-- The Scene::_updateProgress() and  Scene::_getNextTile() uses a lock (and a mutex) to prevent data races amongst threads.
+- The Scene::_updateProgress() and  Scene::_getNextTile() uses a [lock (and a mutex)](src/scene.cpp) l72 to prevent data races amongst threads.
 
 A condition variable is used in the project.
 - Didn't really need to use this for now
