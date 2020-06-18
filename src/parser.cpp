@@ -1,7 +1,5 @@
 #include <fstream>
 #include <sstream>
-#include <filesystem>
-// namespace fs = std::filesystem;
 
 #include "parser.h"
 #include "scene.h"
