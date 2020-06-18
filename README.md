@@ -2,14 +2,14 @@
 
 ## Project Overview
 
-Nray is a multithreaded offline physically based raytracer. It reads a scene file that describes a camera, a lighting environment and several objects. It then renders the scene, using the raytracing algorithm and outputs an image. It is written in modern c++, and apart from the header-only [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) and [stb_image_write.h](https://github.com/nothings/stb/blob/master/stb_image_write.h) it is not using any other libraries so it's easy to compile and run it on different architectures. It is a learning project so I tried implementing myself every feature.
+Nray is a multithreaded offline physically based raytracer. It reads a scene file that describes a camera, a lighting environment and several objects. It then renders the scene, using the raytracing algorithm and outputs an image. It is written in modern c++, and apart from the header-only [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) and [stb_image_write.h](https://github.com/nothings/stb/blob/master/stb_image_write.h) it is not using any other libraries so it's easy to compile and run on different architectures. It is a learning project so I tried implementing myself every feature.
 
-Raytracing isn't new and is very well documented, here are some the resources I used :
+Raytracing isn't new and is very well documented, here are some of the resources I used :
 - [Peter Shirley's Raytracing series](https://raytracing.github.io/)
 - [Matt Pharr, Wenzel Jakob and Greg Humphreys PhysicallyBasedRayTracing](https://www.pbrt.org/)
 - [Scratch a Pixel](https://www.scratchapixel.com/)
 
-Nray comes with a few sample scenes and objects as well as some HDR images to use for Image-Based-Lighting. It can currently handle Spheres and Triangle Meshes. It can reads [.obj files](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
+Nray comes with a few sample scenes and objects as well as some HDR images to use for Image-Based-Lighting. It can currently handle Spheres and Triangle Meshes and reads [.obj files](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
 It has a few different Materials defining how the objects interacts with the lights :
 - Lambertian
 - Dielectric
@@ -51,12 +51,9 @@ Here's a few example renders :
 
 ## Description and use
 
-Once the program runs, a Scene is created and populated with multiple Primitive(s). Primitive represent objects that can be intersected and thus traced recursively by the main rendering function. Primitive have Material that describe how the light interacts with them. The Scene::Render method intialize multiple thread and have them render small sections of the Image (called tiles) at a time.
-For each tile we throw Ray(s) through the Camera and find out if the Ray intersect any scene Primitive. If so then we compute the lighting information and scatter the Ray further.
+nray is a command line tools that takes a scene as an input and renders it as an image.
 
-
-Nray comes with 3 samples scenes that can be modified to render different things. The renderer can handle Spheres and Triangle Meshes, the latter can be read as an .obj file
-Once the project is built you can pass a scene file and run it
+It comes with 3 samples scenes that can be modified to render different things.
 
 `./nray ../scenes/cornell_box.nray`
 
@@ -100,14 +97,16 @@ Note that to avoid being clamped by the image format normals are remapped from  
 
 ![Broken Bunny Normals][img4]
 
-Scene files are basically text files that describe the different elements to load in the scene. This is the intended syntax, comment line starts with #. Have a look at scenes/scene_template.nray for an detailed example of what is available.
+Scene files are basically text files that describe the different elements to load in the scene. Have a look at [scenes/scene_template.nray](scenes/scene_template.nray) for an detailed example of what is available, commented lines starts with an #
 
 
 ### Files and Classes Structure
 
-Scene is the main class that gather a world (multiple Primitive) and render through a Camera to output an Image. Scene::Render() sends Ray to intersect with the world and return Color values;
-Primitives are the intersectable objects. Primitive is the base virtual class and every other object is derived from there (BVH, Triangle...)
-Material is what describe the Primitive surface's properties, how it interacts with the light. There's a few different Material, all inheriting from the base class (LambertianMaterial, DielectricMaterial...)
+Once the program runs, a [Scene](src/scene.h) is created and populated with multiple [Primitives](src/primitive.h). Primitive represent objects that can be intersected and thus traced recursively by the main rendering function. Primitive have [Materials](src/material.h) that describe how the light interacts with them. The Scene::Render method splits the image to render into multiple small sections (called tiles) and add them to a queue. the method then initializes multiple threads and have render all the tiles, one after the other. It is the most common form of multithreading in the commercial raytracers.
+
+For each tile we use the [Camera](src/camera.h) to throw multiple [Rays](src/geometry.h) (one per pixel samples to be correct) through every pixel. We then find out if the Ray intersect any scene Primitive. If so then we compute the lighting information using its Material and scatter the Ray further. We then take the average of all those color samples and set the final pixel color in the [Image](src/image.h). Once all the thread have finished rendering all the tiles we write the Image to disk as a .png file and exit the program.
+
+The rest of the code just helps support and implement those main classes, for example the [parsing functions](src/parser.h) parse the different file inputs to generate data that nray understands.
 
 ## Additional Rubric Points
 
