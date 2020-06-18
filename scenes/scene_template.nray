@@ -1,0 +1,24 @@
+# Scene file template
+#
+# Every scene needs settings, a camera and at least an Object
+# Object Material needs to be described before the object itself
+# Subsequent objects will inherit the same material if no other
+# are declared
+#
+#<Settings> width height pixels_samples max_ray_depth
+#
+#<Camera> lookfrom(x y z) lookat(x y z) vup(x y z) vfov aperture focus_dist DepthOfFocus(0 off, 1 on)
+#
+#<Environment> r g b /path/to/file.hdr 
+#
+#<Material> Lambertian r g b
+#<Sphere> p(x y z) radius
+#<Sphere> p(x y z) radius
+#
+# ^ in the example above both Spheres will share the same material
+#
+#<Material> Metal r g b roughness
+#<Sphere> p(x y z) radius
+#
+#<Material> Dielectric r g b refr_index
+#<ObjMesh> /path/to/mesh.Obj
