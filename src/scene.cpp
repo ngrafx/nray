@@ -29,8 +29,9 @@ Color TraceNormalOnly(const Ray& r, Scene *scene) {
     if (scene->World()->Intersect(r, 0.001, Infinity, rec)) {
         Ray scattered;
         Color attenuation;
-        // return rec.normal*0.5 + Color(0.5, 0.5, 0.5);
-        return rec.normal;
+        // Remap normals between 0 and 1
+        return rec.normal*0.5 + Color(0.5, 0.5, 0.5);
+        // return rec.normal;
     }
     return Color(0,0,0);
 }
