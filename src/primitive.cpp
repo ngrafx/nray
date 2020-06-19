@@ -167,13 +167,13 @@ bool BVH::Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec) con
 
 
 // Triangle & Triangle Mesh Implementation
-
 Triangle::Triangle(const shared_ptr<TriangleMesh> &mesh, int index, shared_ptr<Material> mat) : _mesh(mesh), material(mat) {
     _index = &mesh->vertexIndices[3*index];
 }
 
 
 bool Triangle::Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec) const {
+    // Get Vertices pos
     const Point &p0 = _mesh->vp[_index[0]];
     const Point &p1 = _mesh->vp[_index[1]];
     const Point &p2 = _mesh->vp[_index[2]];
@@ -200,10 +200,11 @@ bool Triangle::Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec
     Float v = Dot(r.Direction(), qvec) * invDet;
     if (v < 0 || u + v > 1) return false;
     
-    // Set intersection info
     Float t = Dot(v0v2, qvec) * invDet;
     // Exit is t is not between min and max
     if (t < tmin || t > tmax) return false;
+
+    // Set intersection info
     rec.t = t;
     rec.p = r(rec.t);
     rec.material = material;
@@ -211,10 +212,12 @@ bool Triangle::Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec
     // Compute Normal
     Vec3 outward_normal =  Normalize(Cross(v0v1, v0v2));
     rec.SetFaceNormal(r, outward_normal);
-    // const Normal &n0 = _mesh->vn[_index[0]];
-    // rec.SetFaceNormal(r, n0);
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////// TODO read normal info from Triangle
+    // const Normal &n0 = _mesh->vn[_index[0]];
+    // const Normal &n1 = _mesh->vn[_index[1]];
+    // const Normal &n2 = _mesh->vn[_index[2]];
+    // Vec3 nn = (n0+n1+n2)/3;
+    // rec.SetFaceNormal(r, nn);
 
     return true;
 
@@ -226,6 +229,7 @@ bool Triangle::BoundingBox(Float t0, Float t1, BBox& output_box) const {
     const Point &p1 = _mesh->vp[_index[1]];
     const Point &p2 = _mesh->vp[_index[2]];
 
+    // Get min and max value of each axis
     Float minx = Min(Min(p0.x, p1.x), p2.x);
     Float miny = Min(Min(p0.y, p1.y), p2.y);
     Float minz = Min(Min(p0.z, p1.z), p2.z);
@@ -241,6 +245,9 @@ bool Triangle::BoundingBox(Float t0, Float t1, BBox& output_box) const {
 
 
 // Triangle & Triangle Mesh Utilities
+
+// Creates a triangle mesh and returns a vector of Triangle Primitive
+// referencing it
 std::vector<shared_ptr<Primitive>> CreateTriangleMesh(
     int nTriangles, std::vector<int> &&vertexIndices, 
     std::vector<Point> &&vp, std::vector<Normal> &&vn,

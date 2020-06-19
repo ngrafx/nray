@@ -45,6 +45,9 @@ void PrintUsage() {
     std::cout << "\n -t tile_size\n";
     std::cout << "\tSets the tile size (defaults to 16)\n";
 
+    std::cout << "\n -j max_threads\n";
+    std::cout << "\tLimits the max number of threads\n";
+
     std::cout << "\n --normalOnly\n";
     std::cout << "\tRender the Scene's normal only. No Lighting/material computation\n";
 }
@@ -119,6 +122,9 @@ int main(int argc, char *argv[]) {
         }
         else if (strcmp(argv[i], "--normalOnly") == 0) {
             opt.normalOnly = true;
+        }
+        else if (strcmp(argv[i], "-j") == 0) {
+            opt.max_threads = std::stoi(argv[i+1]);
         }
     }
 

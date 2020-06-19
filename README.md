@@ -1,5 +1,5 @@
 # Nray
-
+![Nray][img4]
 ## Project Overview
 
 Nray is a multithreaded physically based raytracer. It reads a scene file that describes a camera, a lighting environment and several objects. It then renders the scene using the raytracing algorithm and outputs an image. It is written in modern c++, and apart from the header only [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) and [stb_image_write.h](https://github.com/nothings/stb/blob/master/stb_image_write.h) it is not using any other libraries so it's easy to compile and run on different architectures. It is a learning project so I tried implementing myself every feature.
@@ -19,12 +19,15 @@ It has a few different Materials defining how the objects interacts with the lig
 Here's a few example renders :
 
 ![Broken Bunny][img3]
+700 samples, 1024x576, 25 max bounces, 4hr30min on 40 threads (Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz)
 `./nray ../scenes/broken_bunny.nray`
 
 ![Cornell Box][img1]
+1500 samples, 1024x576, 15 max bounces, 1hr5min on 12 threads (Intel(R) Core(TM) i7-9750H CPU @ 2.60Ghz)
 `./nray ../scenes/cornell_box.nray`
 
 ![Test Scene][img2]
+1500 samples, 1024x576, 15 max bounces, 9min50 on 12 threads (Intel(R) Core(TM) i7-9750H CPU @ 2.60Ghz)
 `./nray --testScene`
 
 ## Building and Running Locally
@@ -86,6 +89,9 @@ Optional:
 
  -t tile_size
         Sets the tile size (defaults to 16)
+
+ -j max_threads
+        Limits the max number of threads
 
  --normalOnly
         Render the Scene's normal only. No Lighting/material computation
@@ -190,3 +196,4 @@ A condition variable is used in the project.
 [img2]:                   images/test_scene.png
 [img3]:                   images/broken_bunny.png
 [img4]:                   images/broken_bunny_normals.png
+[img5]:                   images/vignette.jpg

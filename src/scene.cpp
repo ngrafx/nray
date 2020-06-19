@@ -12,10 +12,12 @@ Color Trace(const Ray& r, Scene *scene, int depth) {
     if (depth <= 0)
         return Color(0,0,0);
 
+    // If no intersection is found return the environment color
     if (!scene->World()->Intersect(r, 0.001, Infinity, rec)) {
         return scene->SampleEnvironment(r);
     }
 
+    // Scatter light
     Ray scattered;
     Color attenuation;
     Color emitted = rec.material->Emitted();
@@ -70,6 +72,8 @@ Scene& Scene::operator=(Scene&& other) {
 
 
 bool Scene::_getNextTile(int &tile) {
+    // Returns true if a tile was given
+    // false if there's no more tile in the queue
     std::unique_lock<std::mutex> lck(_mtx);
     if (_tilesToRender.empty())
         return false;
@@ -81,7 +85,9 @@ bool Scene::_getNextTile(int &tile) {
 
 void Scene::RenderTile() {
     int tile_number;
+    // Run until there's no more tiles left to render
     while(_getNextTile(tile_number)) {
+        // Get the start & end pixel position of the tile
         int tsize = _options.tile_size;
         int start_x = (tile_number % _numTilesWidth) * tsize;
         int end_x = start_x + tsize;
@@ -89,9 +95,11 @@ void Scene::RenderTile() {
         int start_y = (tile_number / _numTilesWidth) * tsize;
         int end_y = start_y + tsize;
 
+        // For every pixel in the tile
         for (int y = start_y; y< end_y; y++) {
             for (int x = start_x; x< end_x; x++) {
                 Color color;
+                // For every sample
                 for (int s = 0; s < _options.pixel_samples; ++s) {
                     Float u = (x + Rng::Rand01()) / _img.Width();
                     Float v = 1.0 - (y + Rng::Rand01()) / _img.Height();
@@ -112,6 +120,8 @@ void Scene::RenderTile() {
 }
 
 void Scene::_updateProgress() {
+    // Update the number of tile rendered
+    // and report progress to the user
     std::unique_lock<std::mutex> lck(_mtx_cout);
     _renderedTiles++;
     Float perc = _renderedTiles / (Float)_numTiles;
@@ -134,8 +144,14 @@ Image Scene::Render() {
     _numTiles = _numTilesWidth * _numTilesHeight;
     _renderedTiles = 0;
 
-    int nThreads = Min(_numTiles, std::thread::hardware_concurrency());
+    // Get the number of threads available
+    int availableThreads = std::thread::hardware_concurrency();
+    // If user override the thread number
+    if (_options.max_threads != -1)
+        availableThreads = Min(availableThreads, _options.max_threads);
 
+    // Final number of threads
+    int nThreads = Min(_numTiles, availableThreads);
     std::cout << "\n\nRunning " << nThreads << " threads\n";
 
 
@@ -163,9 +179,10 @@ void Scene::PrintSettings() {
     std::cout << "Image: " << _options.image_width << "x" << _options.image_height << "\n";
     std::cout << "Pixel samples: " << _options.pixel_samples << "\n";
     std::cout << "Ray Depth: " << _options.max_ray_depth << "\n";
+    std::cout << "Tile size: " << _options.tile_size << "x" << _options.tile_size << "\n";
     std::cout << "Output: " << _options.image_out << "\n\n";
     if(_options.normalOnly)
-        std::cout << "\nSettings renderer to Normal Only\nn";
+        std::cout << "\nSetting renderer to Normal Only\nn";
 }
 
 

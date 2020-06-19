@@ -33,8 +33,6 @@ class Primitive {
         // can be intersected and we can get its bounding box
         virtual bool Intersect(const Ray& r, Float t_min, Float t_max, Intersection& rec) const = 0;
         virtual bool BoundingBox(Float t0, Float t1, BBox& output_box) const = 0;
-
-        shared_ptr<Material> material;
 };
 
 // Primitive List Container
@@ -112,10 +110,9 @@ struct TriangleMesh {
     }
 
     const int nTriangles;
-    // const int nVertices;
     std::vector<int> vertexIndices;
     std::vector<Point> vp; // Vertices positions
-    std::vector<Point> vn;
+    std::vector<Point> vn; // Vertices normals
     // unique_ptr<Vec3[]> s;
     // unique_ptr<Vec2[]> uv;
     // std::shared_ptr<Texture<Float>> alphaMask, shadowAlphaMask;

@@ -68,6 +68,7 @@ struct RenderSettings {
   int pixel_samples{20};
   int max_ray_depth{5};
   bool normalOnly{false};
+  int max_threads{-1};
   char const *image_out{"./out.png"};
 };
 
