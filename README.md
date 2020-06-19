@@ -6,7 +6,7 @@ Nray is a multithreaded physically based raytracer. It reads a scene file that d
 
 Raytracing is very well documented, here are some of the resources I used :
 - [Peter Shirley's Raytracing series](https://raytracing.github.io/)
-- [Matt Pharr, Wenzel Jakob and Greg Humphreys PhysicallyBasedRayTracing](https://www.pbrt.org/)
+- [Matt Pharr, Wenzel Jakob and Greg Humphreys PBRT book](https://www.pbrt.org/)
 - [Scratch a Pixel](https://www.scratchapixel.com/)
 
 Nray comes with a few sample scenes and objects as well as some HDR images to use for Image-Based-Lighting. It can currently handle Spheres and Triangle Meshes and reads [.obj files](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
@@ -18,20 +18,20 @@ It has a few different Materials defining how the objects interacts with the lig
 
 Here's a few example renders :
 
+`./nray ../scenes/broken_bunny.nray`
 ![Broken Bunny][img3]
 700 samples, 1024x576, 25 max bounces, 4hr30min on 40 threads (Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz)
 
-`./nray ../scenes/broken_bunny.nray`
 
+`./nray ../scenes/cornell_box.nray`
 ![Cornell Box][img1]
 1500 samples, 1024x576, 15 max bounces, 1hr5min on 12 threads (Intel(R) Core(TM) i7-9750H CPU @ 2.60Ghz)
 
-`./nray ../scenes/cornell_box.nray`
 
+`./nray --testScene`
 ![Test Scene][img2]
 1500 samples, 1024x576, 15 max bounces, 9min50 on 12 threads (Intel(R) Core(TM) i7-9750H CPU @ 2.60Ghz)
 
-`./nray --testScene`
 
 ## Building and Running Locally
 
