@@ -20,14 +20,17 @@ Here's a few example renders :
 
 ![Broken Bunny][img3]
 700 samples, 1024x576, 25 max bounces, 4hr30min on 40 threads (Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz)
+
 `./nray ../scenes/broken_bunny.nray`
 
 ![Cornell Box][img1]
 1500 samples, 1024x576, 15 max bounces, 1hr5min on 12 threads (Intel(R) Core(TM) i7-9750H CPU @ 2.60Ghz)
+
 `./nray ../scenes/cornell_box.nray`
 
 ![Test Scene][img2]
 1500 samples, 1024x576, 15 max bounces, 9min50 on 12 threads (Intel(R) Core(TM) i7-9750H CPU @ 2.60Ghz)
+
 `./nray --testScene`
 
 ## Building and Running Locally
