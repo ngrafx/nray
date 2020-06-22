@@ -10,7 +10,7 @@ Raytracing is very well documented, here are some of the resources I used :
 - [Scratch a Pixel](https://www.scratchapixel.com/)
 
 Nray comes with a few sample scenes and objects as well as some HDR images to use for Image-Based-Lighting. It can currently handle Spheres and Triangle Meshes and reads [.obj files](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
-It has a few different Materials defining how the objects interacts with the lights :
+It has a few different Materials defining how the objects interacts with lights :
 - Lambertian
 - Dielectric
 - Metal
@@ -122,78 +122,6 @@ All the source files are in [src/](src/)
 External header libraries are in [external/](external/)
 
 Sample scenes in [senes/](scenes/) as well as the [objs](scenes/objs/) and [hdr images](scenes/maps/) they reference
-
-## Additional Rubric Points
-
-### Loops, Functions, I/O
-The project demonstrates an understanding of C++ functions and control structures.
-- I hope so!
-
-The project reads data from a file and process the data, or the program writes data to a file.
-- Project loads a scene file and render an image on disk
-
-The project accepts user input and processes the input.
-- Project takes a scene file from the user and additional command line instructions
-
-### Object Oriented Programming
-The project uses Object Oriented Programming techniques.
-- yes
-
-Classes use appropriate access specifiers for class members.
-- Yes if the class members are invariant.
-
-Class constructors utilize member initialization lists.
-- All classes are using them when applicable (e.g. primitive.h)
-
-Classes abstract implementation details from their interfaces.
-- Have a look at the [Image class](src/image.h). For example we can query and set the pixel [Colors](src/nray.h) by specifying x & y coordinates although the data is actually stored as a Float array. This simplify the use of the class (as the rest of the programs 'thinks' in 2d coordinates) regardless of how the class stores data internally
-
-Classes encapsulate behavior.
-- In the [Image class](src/image.h) all the image related operations are encapsulated
-
-Classes follow an appropriate inheritance hierarchy.
-- In [primitive.h](src/primitive.h) you can see that all the primitives inherit from the pure virtual Primitive() class, same goes with all the Materials
-
-Overloaded functions allow the same function to operate on different parameters.
-- In [geometry.h](src/geometry.h) you can see that we're overloading all the operator for the templated Vector3<> class. Classes constructors are often overloaded and for example the Image::operator() is overloaded so it can performs different actions if it's given integers (pixel coords) or floats (normalized pixel coordinates)
-
-Derived class functions override virtual base class functions.
-- You can see all the children Primitive class in [primitive.h](src/primitive.h)
-
-Templates generalize functions in the project.
-- The Vector3 class is a templated class, implemented in [geometry.h](src/geometry.h). There's also some templated functions in nray.h
-
-### Memory Management
-The project makes use of references in function declarations.
-- Whenever the data is bigger than the simple data types I am using references. (e.g. l30 in [image.h](src/image.h) : SetPixel(int x, int y, Color &c))
-
-The project uses destructors appropriately.
-- As I'm only using smart pointers and not allocating anything 'manually' on the heap I didn't find the need to change the default Destructors.
-
-The project uses scope / Resource Acquisition Is Initialization (RAII) where appropriate.
-- This should mostly be the case. For example I'm using make_shared and make_unique for all the smart pointers intializations
-
-The project follows the Rule of 5.
-- Project does follow the rule of 5. Both [Image](src/image.h) & [Scene](src/scene.h) have all 5 implemented as I needed to control their move mechanism
-
-The project uses move semantics to move data, instead of copying it, where possible.
-- The Scene::Render methods return a std::move(Image) instead of copyting the data ([scene.cpp](src/scene.cpp) l158). Same technique is used throughout the project, in  CreateTriangleMesh() for example [primitive.cpp](src/primitive.cpp), l258
-
-The project uses smart pointers instead of raw pointers.
-- I am only using Smart Pointers and am not directly using raw pointers apart as arguments in certain function calls as per the Core C++ guidelines
-
-### Concurrency
-The project uses multithreading.
-- The Scene::Render() method uses multiple std::threads to render the image in tiles ([scene.cpp](src/scene.cpp) l123)
-
-A promise and future is used in the project.
-- Didn't really need to use this for now
-
-A mutex or lock is used in the project.
-- The Scene::_updateProgress() and  Scene::_getNextTile() uses a [lock (and a mutex)](src/scene.cpp) l72 to prevent data races amongst threads.
-
-A condition variable is used in the project.
-- Didn't really need to use this for now
 
 [img1]:                   images/cornell_box.png
 [img2]:                   images/test_scene.png
