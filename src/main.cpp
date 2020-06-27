@@ -48,6 +48,12 @@ void PrintUsage() {
     std::cout << "\n -j max_threads\n";
     std::cout << "\tLimits the max number of threads\n";
 
+    std::cout << "\n -color_limit max_value\n";
+    std::cout << "\tClamps the maximum color value. Can help reduce fireflies with very bright lights (defaults to 10)\n";
+
+    std::cout << "\n --useBgColorAtLimit\n";
+    std::cout << "\tUse the background (environment) color at ray limit instead of black\n";    
+
     std::cout << "\n --normalOnly\n";
     std::cout << "\tRender the Scene's normal only. No Lighting/material computation\n";
 }
@@ -120,11 +126,17 @@ int main(int argc, char *argv[]) {
         else if (strcmp(argv[i], "-t") == 0) {
             opt.tile_size = std::stoi(argv[i+1]);
         }
-        else if (strcmp(argv[i], "--normalOnly") == 0) {
-            opt.normalOnly = true;
-        }
         else if (strcmp(argv[i], "-j") == 0) {
             opt.max_threads = std::stoi(argv[i+1]);
+        }
+        else if (strcmp(argv[i], "-color_limit") == 0) {
+            opt.color_limit = std::stoi(argv[i+1]);
+        }
+        else if (strcmp(argv[i], "--useBgColorAtLimit") == 0) {
+            opt.useBgColorAtLimit = true;
+        }
+        else if (strcmp(argv[i], "--normalOnly") == 0) {
+            opt.normalOnly = true;
         }
     }
 

@@ -9,8 +9,12 @@ Color Trace(const Ray& r, Scene *scene, int depth) {
     Intersection rec;
 
     // If we've exceeded the ray bounce limit, no more light is gathered.
-    if (depth <= 0)
+    if (depth <= 0) {
+        // If we're color at Ray Limit
+        if (scene->Settings().useBgColorAtLimit)
+            return scene->SampleEnvironment(r);
         return Color(0,0,0);
+    }
 
     // If no intersection is found return the environment color
     if (!scene->World()->Intersect(r, 0.001, Infinity, rec)) {
@@ -107,7 +111,7 @@ void Scene::RenderTile() {
                     if(_options.normalOnly){
                         color += TraceNormalOnly(r, this);
                     } else {
-                        color += Trace(r, this, _options.max_ray_depth);
+                        color += ClampMax(Trace(r, this, _options.max_ray_depth), _options.color_limit);
                     }
                 }
                 color /= (Float) _options.pixel_samples;

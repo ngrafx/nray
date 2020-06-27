@@ -96,6 +96,12 @@ Optional:
  -j max_threads
         Limits the max number of threads
 
+ -color_limit max_value
+        Clamps the maximum color value. Can help reduce fireflies with very bright lights (defaults to 10)
+
+ --useBgColorAtLimit
+        Use the background (environment) color at ray limit instead of black
+
  --normalOnly
         Render the Scene's normal only. No Lighting/material computation
 

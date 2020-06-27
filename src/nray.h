@@ -38,7 +38,6 @@ constexpr Float Inv2Pi  = 0.15915494309189533577;
 #define MachineEpsilon (std::numeric_limits<Float>::epsilon() * 0.5)
 constexpr Float kEpsilon = 1e-8;
 
-constexpr Float ImageClampMax = 100;
 
 
 // Using
@@ -67,8 +66,10 @@ struct RenderSettings {
   int tile_size{16};
   int pixel_samples{20};
   int max_ray_depth{5};
+  int color_limit{10};
   bool normalOnly{false};
   int max_threads{-1};
+  bool useBgColorAtLimit{false};
   char const *image_out{"./out.png"};
 };
 
@@ -101,6 +102,11 @@ inline T Clamp(const T &t, const U &min_, const V &max_) {
   if (t < min_) return min_;
   if (t > max_) return max_;
   return t;
+}
+
+template <typename T, typename U>
+inline Vector3<T> ClampMax(Vector3<T> v, U u) {
+  return Vector3<T>(Min(v.x, u), Min(v.y, u), Min(v.z, u));
 }
 
 inline Float Gamma(int n) {

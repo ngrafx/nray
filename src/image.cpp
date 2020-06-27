@@ -137,6 +137,6 @@ void Image::LoadFromFile(char const *filename) {
     // Copy data to our pixels array
     _pixels = make_unique<Float[]>(_size);
     for (int i = 0; i < _size; i++) {
-        _pixels[i] = Min(data[i], ImageClampMax);
+        _pixels[i] = data[i];
     }
 }
