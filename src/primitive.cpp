@@ -210,14 +210,16 @@ bool Triangle::Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec
     rec.material = material;
 
     // Compute Normal
-    Vec3 outward_normal =  Normalize(Cross(v0v1, v0v2));
-    rec.SetFaceNormal(r, outward_normal);
+    // Vec3 outward_normal =  Normalize(Cross(v0v1, v0v2));
+    // rec.SetFaceNormal(r, outward_normal);
 
-    // const Normal &n0 = _mesh->vn[_index[0]];
-    // const Normal &n1 = _mesh->vn[_index[1]];
-    // const Normal &n2 = _mesh->vn[_index[2]];
+    const Normal &n0 = _mesh->vn[_index[0]];
+    const Normal &n1 = _mesh->vn[_index[1]];
+    const Normal &n2 = _mesh->vn[_index[2]];
     // Vec3 nn = (n0+n1+n2)/3;
-    // rec.SetFaceNormal(r, nn);
+    Vec3 nn = u*n1 + v*n2 + (1-u-v)*n0;
+    // Vec3 nn = n0;
+    rec.SetFaceNormal(r, nn);
 
     return true;
 
@@ -245,6 +247,35 @@ bool Triangle::BoundingBox(Float t0, Float t1, BBox& output_box) const {
 
 
 // Triangle & Triangle Mesh Utilities
+
+TriangleMesh::TriangleMesh(int nTriangles_, std::vector<int> &&vertexIndices_, std::vector<Point> &&vp_, std::vector<Normal> &&vn_) : 
+                                nTriangles(nTriangles_) {
+    vertexIndices = std::move(vertexIndices_);
+    vp = std::move(vp_);
+    vn = std::move(vn_);
+
+    // Create normals if they don't exist
+    if (vp.size() != vn.size()) {
+        // Clear vn and resize it to vp
+        vn.clear();
+        vn.resize(vp.size());
+        // For each triangle
+        for (int i=0; i<nTriangles; i++) {
+            // Get vertex positions
+            const Point &p0 = vp[vertexIndices[i*3+0]];
+            const Point &p1 = vp[vertexIndices[i*3+1]];
+            const Point &p2 = vp[vertexIndices[i*3+2]];
+
+            Vec3 v0v1 = p1 - p0;
+            Vec3 v0v2 = p2 - p0;
+            Vec3 norm = Cross(v0v1,v0v2);
+            vn[vertexIndices[i*3+0]] = norm;
+            vn[vertexIndices[i*3+1]] = norm;
+            vn[vertexIndices[i*3+2]] = norm;
+        }
+    }
+}
+
 
 // Creates a triangle mesh and returns a vector of Triangle Primitive
 // referencing it

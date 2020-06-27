@@ -112,11 +112,15 @@ std::vector<shared_ptr<Primitive>> LoadObjFile(char const *filename, shared_ptr<
                 else
                     vertex = std::stoi(vertexBlock);
                 vertexIndices.push_back(vertex - 1); // Index needs to start from 0
-                // TODO: Store normals & uvs if present
+                // TODO: Store uvs if present
             }
         }
         key = "";
     }
+
+    // std::cout << "Vertex pos: " << vertexPos.size() << " Vertex norm: " << vertexNorm.size() << "\n";
+    // std::cout << "Faces: " << vertexIndices.size() << " -> " << vertexIndices.size() / 3 << "\n";
+
     trianglemesh = CreateTriangleMesh( nTriangles, std::move(vertexIndices), 
                                         std::move(vertexPos), std::move(vertexNorm), material);
 

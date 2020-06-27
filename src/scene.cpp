@@ -182,7 +182,7 @@ void Scene::PrintSettings() {
     std::cout << "Tile size: " << _options.tile_size << "x" << _options.tile_size << "\n";
     std::cout << "Output: " << _options.image_out << "\n\n";
     if(_options.normalOnly)
-        std::cout << "\nSetting renderer to Normal Only\nn";
+        std::cout << "\nSetting renderer to Normal Only\n\n";
 }
 
 

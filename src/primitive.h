@@ -102,12 +102,7 @@ bool _BBoxCompareZ(const shared_ptr<Primitive> a, const shared_ptr<Primitive> b)
 
 // Triangle & TriangleMesh
 struct TriangleMesh {
-    TriangleMesh(int nTriangles_, std::vector<int> &&vertexIndices_, std::vector<Point> &&vp_, std::vector<Normal> &&vn_) : 
-                                  nTriangles(nTriangles_) {
-        vertexIndices = std::move(vertexIndices_);
-        vp = std::move(vp_);
-        vn = std::move(vn_);
-    }
+    TriangleMesh(int nTriangles_, std::vector<int> &&vertexIndices_, std::vector<Point> &&vp_, std::vector<Normal> &&vn_);
 
     const int nTriangles;
     std::vector<int> vertexIndices;
