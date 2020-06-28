@@ -216,9 +216,7 @@ bool Triangle::Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec
     const Normal &n0 = _mesh->vn[_index[0]];
     const Normal &n1 = _mesh->vn[_index[1]];
     const Normal &n2 = _mesh->vn[_index[2]];
-    // Vec3 nn = (n0+n1+n2)/3;
     Vec3 nn = u*n1 + v*n2 + (1-u-v)*n0;
-    // Vec3 nn = n0;
     rec.SetFaceNormal(r, nn);
 
     return true;
@@ -268,7 +266,7 @@ TriangleMesh::TriangleMesh(int nTriangles_, std::vector<int> &&vertexIndices_, s
 
             Vec3 v0v1 = p1 - p0;
             Vec3 v0v2 = p2 - p0;
-            Vec3 norm = Cross(v0v1,v0v2);
+            Vec3 norm = Normalize(Cross(v0v1,v0v2));
             vn[vertexIndices[i*3+0]] = norm;
             vn[vertexIndices[i*3+1]] = norm;
             vn[vertexIndices[i*3+2]] = norm;

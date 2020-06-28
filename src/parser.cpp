@@ -239,6 +239,7 @@ Scene LoadSceneFile(char const *filename) {
     Camera cam(lookfrom, lookat, vup, vfov, options.image_aspect_ratio, aperture, focus_dist, dof==1);
 
     // Create BVH
+    std::cout << "Creating BVH...\n";
     shared_ptr<BVH> bvh = make_shared<BVH>(world, 0.0, 0.0);
 
     Scene scene(bvh, cam, options, std::move(ibl));
