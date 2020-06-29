@@ -12,7 +12,7 @@ Float Schlick(Float cosine, Float ref_idx) {
 
 bool LambertianMaterial::Scatter( const Ray& r_in, const Intersection& rec, Color& attenuation, Ray& scattered ) const  {
     Vec3 scatter_direction = rec.normal + RandomUnitVector<Float>();
-    scattered = Ray(rec.p, scatter_direction);
+    scattered = Ray(rec.p, scatter_direction, RayType::Diffuse);
     attenuation = _albedo;
     // attenuation = Vec3(1, 0, 1);
     return true;
@@ -28,7 +28,7 @@ bool DielectricMaterial::Scatter( const Ray& r_in, const Intersection& rec, Colo
     Float sin_theta = sqrt(1.0 - cos_theta*cos_theta);
     if (etai_over_etat * sin_theta > 1.0 ) {
         Vec3 reflected = Reflect(unit_direction, rec.normal);
-        scattered = Ray(rec.p, reflected);
+        scattered = Ray(rec.p, reflected, RayType::Reflect);
         return true;
     }
 
@@ -36,19 +36,19 @@ bool DielectricMaterial::Scatter( const Ray& r_in, const Intersection& rec, Colo
     if (Rng::Rand01() < reflect_prob)
     {
         Vec3 reflected = Reflect(unit_direction, rec.normal);
-        scattered = Ray(rec.p, reflected);
+        scattered = Ray(rec.p, reflected, RayType::Reflect);
         return true;
     }
 
     Vec3 refracted = Refract(unit_direction, rec.normal, etai_over_etat);
-    scattered = Ray(rec.p, refracted);
+    scattered = Ray(rec.p, refracted, RayType::Refract);
     return true;
 }
 
 
 bool MetalMaterial::Scatter( const Ray& r_in, const Intersection& rec, Color& attenuation, Ray& scattered ) const  {
     Vec3 reflected = Reflect(Normalize(r_in.Direction()), rec.normal);
-    scattered = Ray(rec.p, reflected + _fuzz*RandomVectorInUnitSphere<Float>());
+    scattered = Ray(rec.p, reflected + _fuzz*RandomVectorInUnitSphere<Float>(), RayType::Reflect);
     attenuation = _albedo;
     return (Dot(scattered.Direction(), rec.normal) > 0);
 }

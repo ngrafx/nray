@@ -46,6 +46,7 @@ Ray Camera::GetRay(Float s, Float t) {
     return Ray(
         origin + offset,
         lower_left_corner + s*horizontal + t*vertical - origin - offset,
+        RayType::Primary,
         Rng::RandRange(time0, time1)
     );
 }

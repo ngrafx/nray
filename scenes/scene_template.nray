@@ -1,11 +1,13 @@
 # Scene file template
 #
+# Commented lines starts with #
+#
 # Every scene needs settings, a camera and at least an Object
 # Object Material needs to be described before the object itself
 # Subsequent objects will inherit the same material if no other
 # are declared
 #
-#<Settings> width height pixels_samples max_ray_depth
+#<Settings> width height pixels_samples max_diffuse_ray_depth max_reflect_ray_depth max_refract_ray_depth
 #
 #<Camera> lookfrom(x y z) lookat(x y z) vup(x y z) vfov aperture focus_dist DepthOfFocus(0 off, 1 on)
 #

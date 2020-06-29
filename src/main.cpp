@@ -25,7 +25,7 @@ void PrintUsage() {
     std::cout << "\n nray --testScene\n";
     std::cout << "\tRenders the test scene\n";
 
-    std::cout << "\nOptional: \n";
+    std::cout << "\nOptions: \n";
 
     std::cout << "\n -o /path/to/output/image.png\n";
     std::cout << "\tOutput the image to this path\n";
@@ -39,8 +39,14 @@ void PrintUsage() {
     std::cout << "\n -s number_of_pixel_samples\n";
     std::cout << "\tSets the pixel samples\n";
 
-    std::cout << "\n -d ray_depth\n";
-    std::cout << "\tSets the maximum ray depth (number of light bounces)\n";
+    std::cout << "\n -depth_refl ray_depth\n";
+    std::cout << "\tSets the maximum depth/bounces for Reflection Rays, defaults to 5\n";
+
+    std::cout << "\n -depth_refr ray_depth\n";
+    std::cout << "\tSets the maximum depth/bounces for Refraction Rays, defaults to 5\n";
+
+    std::cout << "\n -depth_diff ray_depth\n";
+    std::cout << "\tSets the maximum depth/bounces for Diffuse Rays, defaults to 2\n";  
 
     std::cout << "\n -t tile_size\n";
     std::cout << "\tSets the tile size (defaults to 16)\n";
@@ -120,8 +126,14 @@ int main(int argc, char *argv[]) {
         else if (strcmp(argv[i], "-s") == 0) {
             opt.pixel_samples = std::stoi(argv[i+1]);
         }
-        else if (strcmp(argv[i], "-d") == 0) {
-            opt.max_ray_depth = std::stoi(argv[i+1]);
+        else if (strcmp(argv[i], "-depth_refl") == 0) {
+            opt.max_reflect_rdepth = std::stoi(argv[i+1]);
+        }
+        else if (strcmp(argv[i], "-depth_refr") == 0) {
+            opt.max_refract_rdepth = std::stoi(argv[i+1]);
+        }
+        else if (strcmp(argv[i], "-depth_diff") == 0) {
+            opt.max_diffuse_rdepth = std::stoi(argv[i+1]);
         }
         else if (strcmp(argv[i], "-t") == 0) {
             opt.tile_size = std::stoi(argv[i+1]);

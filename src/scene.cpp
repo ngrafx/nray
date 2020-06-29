@@ -9,12 +9,36 @@ Color Trace(const Ray& r, Scene *scene, int depth) {
     Intersection rec;
 
     // If we've exceeded the ray bounce limit, no more light is gathered.
-    if (depth <= 0) {
+    // if (depth <= 0) {
+    //     // If we're color at Ray Limit
+    //     if (scene->Settings().useBgColorAtLimit)
+    //         return scene->SampleEnvironment(r);
+    //     return Color(0,0,0);
+    // }
+
+    // Check if we've exceeded the max ray depth
+    int max = 0;
+    switch (r.Type()) {
+        case RayType::Primary :
+            max = 999999;
+            break;
+        case RayType::Diffuse :
+            max = scene->Settings().max_diffuse_rdepth;
+            break;
+        case RayType::Reflect :
+            max = scene->Settings().max_reflect_rdepth;
+            break;
+        case RayType::Refract :
+            max = scene->Settings().max_refract_rdepth;
+            break;
+    }
+    if (depth > max) {
         // If we're color at Ray Limit
         if (scene->Settings().useBgColorAtLimit)
             return scene->SampleEnvironment(r);
         return Color(0,0,0);
     }
+
 
     // If no intersection is found return the environment color
     if (!scene->World()->Intersect(r, 0.001, Infinity, rec)) {
@@ -27,7 +51,8 @@ Color Trace(const Ray& r, Scene *scene, int depth) {
     Color emitted = rec.material->Emitted();
     if (!rec.material->Scatter(r, rec, attenuation, scattered))
         return emitted;
-    return emitted + attenuation * Trace(scattered, scene, depth-1);
+    // return emitted + attenuation * Trace(scattered, scene, depth-1);
+    return emitted + attenuation * Trace(scattered, scene, depth+1);
 }
 
 Color TraceNormalOnly(const Ray& r, Scene *scene) {
@@ -87,7 +112,7 @@ bool Scene::_getNextTile(int &tile) {
 }
 
 
-void Scene::RenderTile() {
+void Scene::_RenderTile() {
     int tile_number;
     // Run until there's no more tiles left to render
     while(_getNextTile(tile_number)) {
@@ -111,7 +136,8 @@ void Scene::RenderTile() {
                     if(_options.normalOnly){
                         color += TraceNormalOnly(r, this);
                     } else {
-                        color += ClampMax(Trace(r, this, _options.max_ray_depth), _options.color_limit);
+                        // color += ClampMax(Trace(r, this, _options.max_ray_depth), _options.color_limit);
+                        color += ClampMax(Trace(r, this, 0), _options.color_limit);
                     }
                 }
                 color /= (Float) _options.pixel_samples;
@@ -166,7 +192,7 @@ Image Scene::Render() {
     
     // Send each tile to render on a thread
     for (int i = 0; i < nThreads; i++) {
-        _threads.emplace_back(std::thread(&Scene::RenderTile, this));
+        _threads.emplace_back(std::thread(&Scene::_RenderTile, this));
     }
 
     // Wait for each Thread to finish
@@ -181,9 +207,12 @@ Image Scene::Render() {
 void Scene::PrintSettings() {
     std::cout << "\nRender Settings: \n";
     std::cout << "Image: " << _options.image_width << "x" << _options.image_height << "\n";
-    std::cout << "Pixel samples: " << _options.pixel_samples << "\n";
-    std::cout << "Ray Depth: " << _options.max_ray_depth << "\n";
     std::cout << "Tile size: " << _options.tile_size << "x" << _options.tile_size << "\n";
+    std::cout << "Pixel samples: " << _options.pixel_samples << "\n";
+    std::cout << "Diffuse Ray Depth: " << _options.max_diffuse_rdepth << "\n";
+    std::cout << "Reflect Ray Depth: " << _options.max_reflect_rdepth << "\n";
+    std::cout << "Refract Ray Depth: " << _options.max_refract_rdepth << "\n";
+    std::cout << "Color Limit: " << _options.color_limit << "\n";
     std::cout << "Output: " << _options.image_out << "\n\n";
     if(_options.normalOnly)
         std::cout << "\nSetting renderer to Normal Only\n\n";

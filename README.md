@@ -73,7 +73,7 @@ Usage:
  nray --testScene
         Renders the test scene
 
-Optional:
+Options:
 
  -o /path/to/output/image.png
         Output the image to this path
@@ -87,8 +87,14 @@ Optional:
  -s number_of_pixel_samples
         Sets the pixel samples
 
- -d ray_depth
-        Sets the maximum ray depth (number of light bounces)
+ -depth_refl ray_depth
+        Sets the maximum depth/bounces for Reflection Rays, defaults to 5
+
+ -depth_refr ray_depth
+        Sets the maximum depth/bounces for Refraction Rays, defaults to 5
+
+ -depth_diff ray_depth
+        Sets the maximum depth/bounces for Diffuse Rays, defaults to 2
 
  -t tile_size
         Sets the tile size (defaults to 16)

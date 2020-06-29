@@ -59,20 +59,6 @@ typedef Vector3<Float> Color;
 typedef Vector3<Float> Normal;
 typedef Vector3<Float> Point;
 
-struct RenderSettings {
-  int image_width{200};
-  int image_height{100};
-  Float image_aspect_ratio{2};
-  int tile_size{16};
-  int pixel_samples{20};
-  int max_ray_depth{5};
-  int color_limit{10};
-  bool normalOnly{false};
-  int max_threads{-1};
-  bool useBgColorAtLimit{false};
-  char const *image_out{"./out.png"};
-};
-
 
 // Utility Functions
 

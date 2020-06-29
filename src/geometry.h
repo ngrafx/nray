@@ -278,13 +278,23 @@ inline Float SphericalPhi(const Vec3 &v) {
 }
 
 
-// Ray class
 
+
+// Type of Ray
+enum class RayType
+{
+    Primary,
+    Diffuse,
+    Reflect,
+    Refract
+};
+
+// Ray class
 class Ray 
 {
 public:
     Ray() : _tMax(Infinity), _time(0.f) {}
-    Ray(const Point &o, const Vec3 &d, Float time=0) : _origin(o), _direction(d), _time(time) {}
+    Ray(const Point &o, const Vec3 &d, RayType type, Float time=0) : _origin(o), _direction(d), _type(type),_time(time) {}
 
     Point operator() (Float t) const { return _origin + _direction * t; }
 
@@ -292,12 +302,14 @@ public:
     Vec3 Direction() const { return _direction;}
     Float Time() const { return _time;}
     Float TMax() const { return _tMax;}
+    RayType Type() const {return _type;}
 
 private:
     Point _origin; // Ray origin
     Vec3 _direction; // Ray Direction
     Float _time{0}; // Ray time
     Float _tMax{Infinity}; // Ray max distance
+    RayType _type; // Type of Ray
 };
 
 // Ray utility Functions

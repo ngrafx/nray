@@ -171,7 +171,9 @@ Scene LoadSceneFile(char const *filename) {
                 linestream >> options.image_width;
                 linestream >> options.image_height;
                 linestream >> options.pixel_samples;
-                linestream >> options.max_ray_depth;
+                linestream >> options.max_diffuse_rdepth;
+                linestream >> options.max_reflect_rdepth;
+                linestream >> options.max_refract_rdepth;
                 break;
 
             case SceneItem::Camera :
