@@ -4,9 +4,9 @@
 #include "parser.h"
 
 #include "image.h"
+#include "implicit.h"
 
 Color Trace(const Ray& r, Scene *scene, int depth) {
-    Intersection rec;
 
     // If we've exceeded the ray bounce limit, no more light is gathered.
     // if (depth <= 0) {
@@ -39,7 +39,7 @@ Color Trace(const Ray& r, Scene *scene, int depth) {
         return Color(0,0,0);
     }
 
-
+    Intersection rec;
     // If no intersection is found return the environment color
     if (!scene->World()->Intersect(r, 0.001, Infinity, rec)) {
         return scene->SampleEnvironment(r);
@@ -222,6 +222,7 @@ void Scene::PrintSettings() {
 // Generate a scene filled with Spheres
 Scene GenerateTestScene(RenderSettings opt) {
     Vec3 lookfrom(13,2,3);
+    // Vec3 lookfrom(0,0,10);
     Vec3 lookat(0,0,0);
     Vec3 vup(0,1,0);
     Float dist_to_focus = 10.0;
@@ -229,12 +230,16 @@ Scene GenerateTestScene(RenderSettings opt) {
 
     Camera cam(lookfrom, lookat, vup, (Float)20, opt.image_aspect_ratio, aperture, dist_to_focus, true);
 
-    //shared_ptr<PrimitiveList> world = make_shared<PrimitiveList>();
+    // shared_ptr<PrimitiveList> world = make_shared<PrimitiveList>();
     PrimitiveList world;
 
     world.add(
         make_shared<Sphere>(Point(0,-1000,0), 1000, make_shared<LambertianMaterial>(Color(0.5, 0.5, 0.5)))
     );
+
+    // world.add(
+    //     make_shared<ImplicitPlane>(0, make_shared<LambertianMaterial>(Color(0.5, 0.5, 0.5)))
+    // );
 
     int i = 1;
     for (int a = -11; a < 11; a++) {
@@ -264,12 +269,14 @@ Scene GenerateTestScene(RenderSettings opt) {
     world.add(
         make_shared<Sphere>(Point(0, 1, 0), 1.0, make_shared<DielectricMaterial>(1.5)));
     world.add(
-        make_shared<Sphere>(Point(-4, 1, 0), 1.0, make_shared<EmissiveMaterial>(Color(5, 0.2, 0.1))));
-    world.add(
-        make_shared<Sphere>(Point(4, 1, 0), 1.0, make_shared<MetalMaterial>(Color(0.7, 0.6, 0.5), 0.0)));
+        make_shared<ImplicitSphere>(Point(-4, 1, 0), 1.0, make_shared<EmissiveMaterial>(Color(5, 0.2, 0.1))));
+    // shared_ptr<Primitive>sph= make_shared<SphereSDF>(Point(0,0,0), 1, make_shared<EmissiveMaterial>(Color(5, 0.2, 0.1)));
+    world.add(   
+        make_shared<ImplicitSphere>(Point(4, 1, 0), 1.0, make_shared<MetalMaterial>(Color(0.7, 0.6, 0.5), 0.0)));
 
     shared_ptr<BVH> bvh = make_shared<BVH>(world, 0.0, 0.0);
     Scene scene(bvh, cam, opt);
+    // Scene scene(sph, cam, opt);
     scene.ibl.LoadFromFile("../scenes/maps/abandoned_hopper_terminal_02_2k.hdr");
     return std::move(scene);
 }

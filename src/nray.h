@@ -36,7 +36,6 @@ constexpr Float Pi = 3.14159265358979323846;
 constexpr Float InvPi = 0.31830988618379067154;
 constexpr Float Inv2Pi  = 0.15915494309189533577;
 #define MachineEpsilon (std::numeric_limits<Float>::epsilon() * 0.5)
-constexpr Float kEpsilon = 1e-8;
 
 
 

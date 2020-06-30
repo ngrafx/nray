@@ -2,14 +2,18 @@
 ![Nray][img5]
 ## Project Overview
 
-Nray is a multithreaded physically based raytracer. It reads a scene file that describes a camera, a lighting environment and several objects. It then renders the scene using the raytracing algorithm and outputs an image. It is written in modern c++, and apart from the header only [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) and [stb_image_write.h](https://github.com/nothings/stb/blob/master/stb_image_write.h) it is not using any other libraries so it's easy to compile and run on different architectures. It is a learning project so I tried implementing myself every feature.
+Nray is a multithreaded physically based path tracer. It reads a scene file that describes a camera, a lighting environment and several objects. It then renders the scene using the raytracing (and raymarching) algorithm and outputs an image. It is written in modern c++, and apart from the header only [stb_image.h](https://github.com/nothings/stb/blob/master/stb_image.h) and [stb_image_write.h](https://github.com/nothings/stb/blob/master/stb_image_write.h) it is not using any other libraries so it's easy to compile and run on different architectures. It is a learning project so I tried implementing myself every feature.
 
-Raytracing is very well documented, here are some of the resources I used :
+Raytracing & Raymarching are very well documented, here are some of the resources I used :
 - [Peter Shirley's Raytracing series](https://raytracing.github.io/)
 - [Matt Pharr, Wenzel Jakob and Greg Humphreys PBRT book](https://www.pbrt.org/)
 - [Scratch a Pixel](https://www.scratchapixel.com/)
 
-Nray comes with a few sample scenes and objects as well as some HDR images to use for Image-Based-Lighting. It can currently handle Spheres and Triangle Meshes and reads [.obj files](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
+Nray comes with a few sample scenes and objects as well as some HDR images to use for Image-Based-Lighting. It can currently handle the following primitives :
+- Sphere
+- Triangle Meshes, reads as [.obj files](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
+- Implicit Surfaces (SDF)
+
 It has a few different Materials defining how the objects interacts with lights :
 - Lambertian
 - Dielectric

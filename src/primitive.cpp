@@ -185,10 +185,10 @@ bool Triangle::Intersect(const Ray& r, Float tmin, Float tmax, Intersection& rec
 #ifdef CULLING
     // if the determinant is negative the triangle is backfacing
     // if the determinant is close to 0, the ray misses the triangle
-    if (det < kEpsilon) return false;
+    if (det < MachineEpsilon) return false;
 #else
 //     // ray and triangle are parallel if det is close to 0
-//     if (fabs(det) < kEpsilon) return false;
+//     if (fabs(det) < MachineEpsilon) return false;
 #endif
     float invDet = 1 / det;
 
