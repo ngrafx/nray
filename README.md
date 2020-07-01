@@ -24,17 +24,17 @@ Here's a few example renders :
 
 `./nray ../scenes/broken_bunny.nray`
 ![Broken Bunny][img3]
-700 samples, 1024x576, 25 max bounces, 4hr30min on 40 threads (Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz)
+Triangle Meshes only, 700 samples, 1024x576, 25 max bounces, 4hr30min on 40 threads (Intel(R) Xeon(R) CPU E5-2630 v4 @ 2.20GHz)
 
 
 `./nray ../scenes/cornell_box.nray`
 ![Cornell Box][img1]
-1500 samples, 1024x576, 15 max bounces, 1hr5min on 12 threads (Intel(R) Core(TM) i7-9750H CPU @ 2.60Ghz)
+Triangle Meshes & Sphere primitives, 1500 samples, 1024x576, 15 max bounces, 1hr5min on 12 threads (Intel(R) Core(TM) i7-9750H CPU @ 2.60Ghz)
 
 
 `./nray --testScene`
 ![Test Scene][img2]
-1500 samples, 1024x576, 15 max bounces, 9min50 on 12 threads (Intel(R) Core(TM) i7-9750H CPU @ 2.60Ghz)
+Sphere primitives and Implicit (raymarched) Boxes, 500 samples, 1024x576, 5 max bounces (Diffuse, Reflect & Refract), 33min on 12 threads (Intel(R) Core(TM) i7-9750H CPU @ 2.60Ghz)
 
 
 ## Building and Running Locally
