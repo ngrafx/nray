@@ -250,8 +250,13 @@ Scene GenerateTestScene(RenderSettings opt) {
                 if (choose_mat < 0.8) {
                     // diffuse
                     auto albedo = RandomVector<Float>() * RandomVector<Float>();
-                    world.add(
-                        make_shared<Sphere>(center, 0.2, make_shared<LambertianMaterial>(albedo)));
+                    if (Rng::Rand01() < 0.3) {
+                        world.add(
+                            make_shared<ImplicitBox>(center, Vec3(0.1, 0.35, 0.2), make_shared<LambertianMaterial>(albedo))); 
+                    } else {
+                        world.add(
+                            make_shared<Sphere>(center, 0.2, make_shared<LambertianMaterial>(albedo)));
+                    }
                 } else if (choose_mat < 0.95) {
                     // metal
                     auto albedo = RandomVector<Float>(.5, 1);
@@ -270,9 +275,8 @@ Scene GenerateTestScene(RenderSettings opt) {
         make_shared<Sphere>(Point(0, 1, 0), 1.0, make_shared<DielectricMaterial>(1.5)));
     world.add(
         make_shared<ImplicitSphere>(Point(-4, 1, 0), 1.0, make_shared<EmissiveMaterial>(Color(5, 0.2, 0.1))));
-    // shared_ptr<Primitive>sph= make_shared<SphereSDF>(Point(0,0,0), 1, make_shared<EmissiveMaterial>(Color(5, 0.2, 0.1)));
     world.add(   
-        make_shared<ImplicitSphere>(Point(4, 1, 0), 1.0, make_shared<MetalMaterial>(Color(0.7, 0.6, 0.5), 0.0)));
+        make_shared<Sphere>(Point(4, 1, 0), 1.0, make_shared<MetalMaterial>(Color(0.7, 0.6, 0.5), 0.0)));
 
     shared_ptr<BVH> bvh = make_shared<BVH>(world, 0.0, 0.0);
     Scene scene(bvh, cam, opt);

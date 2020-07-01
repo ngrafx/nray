@@ -3,8 +3,6 @@
 #include "primitive.h"
 
 
-
-
 // ImplicitPrimitive Base virtual Class
 // Implicit primitive are primitives that are ray marched thanks to their SDF Function
 class ImplicitPrimitive: public Primitive  {
@@ -17,11 +15,12 @@ class ImplicitPrimitive: public Primitive  {
                 if( h < MachineEpsilon * t) {
                     rec.t = t;
                     rec.p = r(rec.t);
-                    // Compute Gradient to get 
+                    // Compute Gradient to get normal
                     Float delta = 10e-5;
-                    Normal norm = Normalize(Vec3( sdf(rec.p+ Vec3(delta, 0, 0)) - sdf(rec.p - Vec3(delta, 0, 0)),
-                                                  sdf(rec.p+ Vec3(0, delta, 0)) - sdf(rec.p - Vec3(0, delta, 0)),
-                                                  sdf(rec.p+ Vec3(0, 0, delta)) - sdf(rec.p - Vec3(0, 0, delta)) ));
+                    // Float delta = 0.0001;
+                    Normal norm = Normalize(Vec3( sdf(rec.p + Vec3(delta, 0, 0)) - sdf(rec.p + Vec3(-delta, 0, 0)),
+                                                  sdf(rec.p + Vec3(0, delta, 0)) - sdf(rec.p + Vec3(0, -delta, 0)),
+                                                  sdf(rec.p + Vec3(0, 0, delta)) - sdf(rec.p + Vec3(0, 0, -delta)) ));
                     rec.SetFaceNormal(r, norm);
                     rec.material = this->GetMaterial();
                     return true;
@@ -38,6 +37,7 @@ class ImplicitPrimitive: public Primitive  {
         virtual Float sdf(Point p) const = 0;
 
         virtual shared_ptr<Material> GetMaterial() const = 0;
+
 
 };
 
@@ -68,18 +68,20 @@ class ImplicitSphere: public ImplicitPrimitive {
 
 };
 
-class ImplicitPlane: public ImplicitPrimitive {
+
+class ImplicitBox: public ImplicitPrimitive {
     public:
-        ImplicitPlane(Float height, shared_ptr<Material> mat) : _height(height), material(mat) {}
+        ImplicitBox(Point center, Vec3 size, shared_ptr<Material> mat) : _center(center), _size(size), material(mat) {}
 
         bool BoundingBox(Float t0, Float t1, BBox& output_box) const {
-            output_box = BBox( Vec3(-Infinity, _height-10e-5, -Infinity),
-                               Vec3(Infinity, _height+10e-5, Infinity) );
+            output_box = BBox( _center - _size,
+                               _center + _size );
             return true;
         }
 
         Float sdf(Point p) const {
-            return p.y - _height;
+            Vec3 d = Abs(p-_center) - _size ;
+            return Min(Max(d.x,Max(d.y,d.z)),0.0) + Vec3(Max(d.x,0),Max(d.y,0),Max(d.z,0)).Length();
         }
 
         shared_ptr<Material> GetMaterial() const {
@@ -90,5 +92,6 @@ class ImplicitPlane: public ImplicitPrimitive {
     shared_ptr<Material> material;
 
     private:
-        Float _height;
+        Point _center;
+        Vec3 _size;
 };
